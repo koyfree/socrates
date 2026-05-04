@@ -33,12 +33,12 @@ if "selected_topic" not in st.session_state:
 # Topic options
 # -----------------------------
 TOPIC_OPTIONS = {
-    "기본소득": "Should the government introduce a universal basic income?",
-    "검찰개혁": "Should the prosecution system be reformed?",
-    "탈원전": "Should the country phase out nuclear power?",
-    "한미동맹": "Should South Korea maintain a strong alliance with the United States?",
-    "주4일제 노동시간 단축": "Should the workweek be reduced to four days?",
-    "군가산점": "Should military service points be given in public employment exams?"
+    "기본소득": "기본소득 제도를 도입해야 하는가?",
+    "검찰개혁": "검찰 권한을 축소하는 방향의 검찰개혁은 필요한가?",
+    "탈원전": "한국은 원자력 발전을 단계적으로 줄여야 하는가?",
+    "한미동맹": "한국은 한미동맹을 현재보다 더 강화해야 하는가?",
+    "주4일제 노동시간 단축": "한국 사회는 주4일제 근무를 도입해야 하는가?",
+    "군가산점": "공공기관 채용에서 군복무자에게 가산점을 부여해야 하는가?"
 }
 
 
@@ -81,13 +81,6 @@ with st.sidebar:
             del st.session_state[key]
         st.rerun()
 
-
-# -----------------------------
-# Main area: show selected setup
-# -----------------------------
-st.markdown("### Current setup")
-st.markdown(f"**Condition:** `{st.session_state.selected_condition}`")
-st.markdown(f"**Topic:** {st.session_state.selected_topic}")
 
 
 # -----------------------------
