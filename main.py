@@ -7,6 +7,7 @@ import socratic_app as app
 # -----------------------------
 # Page settings
 # -----------------------------
+
 st.set_page_config(
     page_title="Socratic Chatbot Internal Test",
     layout="wide"
@@ -70,7 +71,11 @@ with st.sidebar:
         disabled=st.session_state.condition_locked
     )
 
-    topic_text = TOPIC_OPTIONS[topic_label]
+    topic_text = st.selectbox(
+    "Controversial topic",
+    options=TOPIC_OPTIONS,
+    disabled=st.session_state.condition_locked
+)
 
     st.session_state.selected_condition = condition_key
     st.session_state.selected_topic = topic_text
