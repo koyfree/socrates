@@ -33,17 +33,12 @@ if "selected_topic" not in st.session_state:
 # Topic options
 # -----------------------------
 TOPIC_OPTIONS = {
-    "기본소득",
-
-    "검찰개혁",
-
-    "탈원전",
-
-    "한미동맹",
-
-    "주4일제 노동시간 단축",
-
-    "군가산점"
+    "기본소득": "Should the government introduce a universal basic income?",
+    "검찰개혁": "Should the prosecution system be reformed?",
+    "탈원전": "Should the country phase out nuclear power?",
+    "한미동맹": "Should South Korea maintain a strong alliance with the United States?",
+    "주4일제 노동시간 단축": "Should the workweek be reduced to four days?",
+    "군가산점": "Should military service points be given in public employment exams?"
 }
 
 
@@ -66,16 +61,12 @@ with st.sidebar:
         condition_key = "non_scaffolding"
 
     topic_label = st.selectbox(
-        "Controversial topic",
-        options=list(TOPIC_OPTIONS.keys()),
-        disabled=st.session_state.condition_locked
-    )
-
-    topic_text = st.selectbox(
     "Controversial topic",
-    options=TOPIC_OPTIONS,
+    options=list(TOPIC_OPTIONS.keys()),
     disabled=st.session_state.condition_locked
 )
+
+    topic_text = TOPIC_OPTIONS[topic_label]
 
     st.session_state.selected_condition = condition_key
     st.session_state.selected_topic = topic_text
