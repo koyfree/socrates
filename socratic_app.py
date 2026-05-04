@@ -214,18 +214,23 @@ def run(condition: str, topic: str, language: str = "eng"):
             "role": "user",
             "content": user_input
         })
-
+    
+        # 사용자의 입력을 즉시 화면에 표시
+        with st.chat_message("user"):
+            st.markdown(user_input)
+    
         turn_number = sum(
             1 for m in st.session_state.messages
             if m["role"] == "user"
         )
-
+    
         previous_questions = [
             item.get("socratic_question", "")
             for item in st.session_state.socratic_outputs
             if item.get("socratic_question")
         ]
-
+    
+        # 사용자 메시지가 보인 상태에서 spinner 표시
         with st.spinner("Generating Socratic question..."):
             try:
                 socratic_output, dean_output, was_revised = generate_with_dean(
@@ -236,12 +241,12 @@ def run(condition: str, topic: str, language: str = "eng"):
                     turn_number=turn_number,
                     previous_questions=previous_questions,
                 )
-
+    
                 question = socratic_output.get("socratic_question", "")
-
+    
                 if not question:
                     question = "방금 답변에서 가장 중요한 표현 하나를 고른다면 무엇이고, 그 표현을 어떤 의미로 사용했는지 조금 더 설명해볼 수 있을까요?"
-
+    
             except Exception as e:
                 socratic_output = {
                     "turn_number": turn_number,
@@ -258,23 +263,27 @@ def run(condition: str, topic: str, language: str = "eng"):
                     },
                     "socratic_question": "방금 답변에서 가장 중요한 표현 하나를 고른다면 무엇이고, 그 표현을 어떤 의미로 사용했는지 조금 더 설명해볼 수 있을까요?"
                 }
-
+    
                 dean_output = {
                     "decision": "error",
                     "failure_types": [],
                     "feedback": str(e)
                 }
-
+    
                 was_revised = False
                 question = socratic_output["socratic_question"]
-
+    
         st.session_state.socratic_outputs.append(socratic_output)
         st.session_state.dean_outputs.append(dean_output)
         st.session_state.was_revised.append(was_revised)
-
+    
         st.session_state.messages.append({
             "role": "assistant",
             "content": question
         })
-
+    
+        # 챗봇 답변도 즉시 화면에 표시
+        with st.chat_message("assistant"):
+            st.markdown(question)
+    
         st.rerun()
