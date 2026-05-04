@@ -20,9 +20,9 @@ def load_prompt(filename: str) -> str:
 
 def get_socratic_prompt(condition: str) -> str:
     if condition == "scaffolding":
-        return load_prompt("socratic_scaffolding.txt")
+        return load_prompt("soc_scaf.txt")
     elif condition == "non_scaffolding":
-        return load_prompt("socratic_non_scaffolding.txt")
+        return load_prompt("soc_no_scaf.txt")
     else:
         raise ValueError(f"Unknown condition: {condition}")
 
