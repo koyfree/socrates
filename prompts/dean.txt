@@ -12,6 +12,8 @@ You will receive:
 
 Evaluate whether the Socratic question is appropriate.
 
+Check whether the Socratic question accurately represents the user's current position in light of the full conversation history.
+
 Check whether the question has any of the following four failure types:
 
 1. Irrelevant
@@ -22,6 +24,7 @@ Mark as Irrelevant if:
 - The question focuses on a concept unrelated to the user’s claim.
 - The question ignores the central point of the user’s response.
 - The question would feel disconnected from what the user just said.
+- Also reject the question if it misrepresents the user's position. A question misrepresents the user if it attributes a claim to the user that they did not make, or ignores qualifications, exceptions, or corrections the user already provided.
 
 2. Repeated
 The question repeats a question that has already been asked, or asks the user to perform the same cognitive task again without moving the conversation forward.
