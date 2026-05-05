@@ -69,7 +69,7 @@ with st.sidebar:
 
     if topic_label == "기타(직접 입력)":
         custom_topic = st.text_area(
-            "직접 주제를 입력하세요",
+            "직접 주제를 입력하고 ctrl+enter를 누르세요",
             placeholder="예: 대학 입시에서 정시 비중을 확대해야 하는가?",
             height=80,
             disabled=st.session_state.condition_locked
