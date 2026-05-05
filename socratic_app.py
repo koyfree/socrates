@@ -46,6 +46,20 @@ def call_model_json(client: OpenAI, instructions: str, payload: dict) -> dict:
     return safe_json_loads(response.output_text)
 
 
+def make_conversation_history() -> list[dict]:
+    """
+    Return the full conversation history currently visible in the chat.
+    This includes user messages and assistant Socratic questions.
+    """
+    return [
+        {
+            "role": m["role"],
+            "content": m["content"]
+        }
+        for m in st.session_state.messages
+    ]
+
+
 def run_socratic_module(
     client: OpenAI,
     condition: str,
@@ -53,6 +67,7 @@ def run_socratic_module(
     user_response: str,
     turn_number: int,
     previous_questions: list[str],
+    conversation_history: list[dict],
     dean_feedback: str = ""
 ) -> dict:
     instructions = get_socratic_prompt(condition)
@@ -62,6 +77,7 @@ def run_socratic_module(
         "user_response": user_response,
         "turn_number": turn_number,
         "previous_socratic_questions": previous_questions,
+        "conversation_history": conversation_history,
         "dean_feedback": dean_feedback,
     }
 
@@ -73,6 +89,7 @@ def run_dean_module(
     topic: str,
     user_response: str,
     previous_questions: list[str],
+    conversation_history: list[dict],
     socratic_output: dict,
     condition: str
 ) -> dict:
@@ -82,6 +99,7 @@ def run_dean_module(
         "topic": topic,
         "user_response": user_response,
         "previous_socratic_questions": previous_questions,
+        "conversation_history": conversation_history,
         "socratic_module_output": socratic_output,
         "socratic_question": socratic_output.get("socratic_question", ""),
         "scaffolding_condition": condition,
@@ -97,7 +115,8 @@ def generate_with_dean(
     topic: str,
     user_response: str,
     turn_number: int,
-    previous_questions: list[str]
+    previous_questions: list[str],
+    conversation_history: list[dict]
 ) -> tuple[dict, dict, bool]:
 
     first_socratic = run_socratic_module(
@@ -107,6 +126,7 @@ def generate_with_dean(
         user_response=user_response,
         turn_number=turn_number,
         previous_questions=previous_questions,
+        conversation_history=conversation_history,
     )
 
     first_dean = run_dean_module(
@@ -114,6 +134,7 @@ def generate_with_dean(
         topic=topic,
         user_response=user_response,
         previous_questions=previous_questions,
+        conversation_history=conversation_history,
         socratic_output=first_socratic,
         condition=condition,
     )
@@ -128,6 +149,7 @@ def generate_with_dean(
         user_response=user_response,
         turn_number=turn_number,
         previous_questions=previous_questions,
+        conversation_history=conversation_history,
         dean_feedback=first_dean.get("feedback", ""),
     )
 
@@ -136,6 +158,7 @@ def generate_with_dean(
         topic=topic,
         user_response=user_response,
         previous_questions=previous_questions,
+        conversation_history=conversation_history,
         socratic_output=revised_socratic,
         condition=condition,
     )
@@ -186,6 +209,13 @@ def render_debug_panel():
     st.sidebar.write(latest_revised)
 
 
+def reset_chat():
+    st.session_state.messages = []
+    st.session_state.socratic_outputs = []
+    st.session_state.dean_outputs = []
+    st.session_state.was_revised = []
+
+
 def run(condition: str, topic: str, language: str = "eng"):
     init_session_state()
 
@@ -197,10 +227,7 @@ def run(condition: str, topic: str, language: str = "eng"):
     st.markdown(f"**Topic:** {topic}")
 
     if st.button("Reset chat"):
-        st.session_state.messages = []
-        st.session_state.socratic_outputs = []
-        st.session_state.dean_outputs = []
-        st.session_state.was_revised = []
+        reset_chat()
         st.rerun()
 
     for msg in st.session_state.messages:
@@ -214,23 +241,26 @@ def run(condition: str, topic: str, language: str = "eng"):
             "role": "user",
             "content": user_input
         })
-    
+
         # 사용자의 입력을 즉시 화면에 표시
         with st.chat_message("user"):
             st.markdown(user_input)
-    
+
         turn_number = sum(
             1 for m in st.session_state.messages
             if m["role"] == "user"
         )
-    
+
         previous_questions = [
             item.get("socratic_question", "")
             for item in st.session_state.socratic_outputs
             if item.get("socratic_question")
         ]
-    
-        # 사용자 메시지가 보인 상태에서 spinner 표시
+
+        # 핵심 추가 부분:
+        # 현재 user_input까지 포함한 전체 대화 내역을 Socratic module과 Dean module에 전달
+        conversation_history = make_conversation_history()
+
         with st.spinner("Generating Socratic question..."):
             try:
                 socratic_output, dean_output, was_revised = generate_with_dean(
@@ -240,13 +270,14 @@ def run(condition: str, topic: str, language: str = "eng"):
                     user_response=user_input,
                     turn_number=turn_number,
                     previous_questions=previous_questions,
+                    conversation_history=conversation_history,
                 )
-    
+
                 question = socratic_output.get("socratic_question", "")
-    
+
                 if not question:
                     question = "방금 답변에서 가장 중요한 표현 하나를 고른다면 무엇이고, 그 표현을 어떤 의미로 사용했는지 조금 더 설명해볼 수 있을까요?"
-    
+
             except Exception as e:
                 socratic_output = {
                     "turn_number": turn_number,
@@ -263,27 +294,27 @@ def run(condition: str, topic: str, language: str = "eng"):
                     },
                     "socratic_question": "방금 답변에서 가장 중요한 표현 하나를 고른다면 무엇이고, 그 표현을 어떤 의미로 사용했는지 조금 더 설명해볼 수 있을까요?"
                 }
-    
+
                 dean_output = {
                     "decision": "error",
                     "failure_types": [],
                     "feedback": str(e)
                 }
-    
+
                 was_revised = False
                 question = socratic_output["socratic_question"]
-    
+
         st.session_state.socratic_outputs.append(socratic_output)
         st.session_state.dean_outputs.append(dean_output)
         st.session_state.was_revised.append(was_revised)
-    
+
         st.session_state.messages.append({
             "role": "assistant",
             "content": question
         })
-    
+
         # 챗봇 답변도 즉시 화면에 표시
         with st.chat_message("assistant"):
             st.markdown(question)
-    
+
         st.rerun()
