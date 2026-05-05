@@ -38,7 +38,8 @@ TOPIC_OPTIONS = {
     "탈원전": "한국은 원자력 발전을 단계적으로 줄여야 하는가?",
     "한미동맹": "한국은 한미동맹을 현재보다 더 강화해야 하는가?",
     "주4일제 노동시간 단축": "한국 사회는 주4일제 근무를 도입해야 하는가?",
-    "군가산점": "공공기관 채용에서 군복무자에게 가산점을 부여해야 하는가?"
+    "군가산점": "공공기관 채용에서 군복무자에게 가산점을 부여해야 하는가?",
+    "기타(직접 입력)": ""
 }
 
 
@@ -66,7 +67,17 @@ with st.sidebar:
     disabled=st.session_state.condition_locked
 )
 
-    topic_text = TOPIC_OPTIONS[topic_label]
+    if topic_label == "기타(직접 입력)":
+        custom_topic = st.text_area(
+            "직접 주제를 입력하세요",
+            placeholder="예: 대학 입시에서 정시 비중을 확대해야 하는가?",
+            height=80,
+            disabled=st.session_state.condition_locked
+        )
+
+        topic_text = custom_topic.strip()
+    else:
+        topic_text = TOPIC_OPTIONS[topic_label]
 
     st.session_state.selected_condition = condition_key
     st.session_state.selected_topic = topic_text
@@ -74,7 +85,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### Selected settings")
     st.write("Condition:", condition_key)
-    st.write("Topic:", topic_text)
+    st.write("Topic:", topic_text if topic_text else "직접 입력 대기 중")
 
     if st.button("Reset entire test"):
         for key in list(st.session_state.keys()):
@@ -82,6 +93,9 @@ with st.sidebar:
         st.rerun()
 
 
+if not st.session_state.selected_topic:
+    st.warning("주제를 먼저 입력하거나 선택해주세요.")
+    st.stop()
 
 # -----------------------------
 # Run chatbot app
