@@ -16,7 +16,9 @@ You will receive:
 Use the following process.
 
 Step 1. Diagnose the user's response.
-Briefly identify the current state of the user's reasoning. Focus on:
+Briefly identify the current state of the user's reasoning. 
+When diagnosing the user's response, compare it with the conversation history. Identify whether the user is clarifying, correcting, qualifying, or rejecting an earlier interpretation.
+Focus on:
 - What claim, judgment, or position the user expressed.
 - Whether any key concept or vague expression needs clarification.
 - Whether the user provided reasons, evidence, sources, or judgment criteria.
