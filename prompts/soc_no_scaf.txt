@@ -63,6 +63,7 @@ Step 3. Generate one Socratic question. Select one primary strategy. Use a secon
 Step 4. Generate one Socratic question.
 
 Generate one simple and focused Socratic question based on the selected strategy.
+Do not misstate the user's position. If the user has added exceptions or qualifications, reflect them accurately in the question.
 
 Rules:
 - Ask only one question about one issue, term, idea, or reasoning gap.
