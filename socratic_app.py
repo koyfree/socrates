@@ -261,7 +261,7 @@ def run(condition: str, topic: str, language: str = "eng"):
         # 현재 user_input까지 포함한 전체 대화 내역을 Socratic module과 Dean module에 전달
         conversation_history = make_conversation_history()
 
-        with st.spinner("Generating Socratic question..."):
+        with st.spinner("Chatbot is typing..."):
             try:
                 socratic_output, dean_output, was_revised = generate_with_dean(
                     client=client,
