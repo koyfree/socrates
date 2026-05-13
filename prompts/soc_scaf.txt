@@ -29,7 +29,9 @@ Focus on:
 - Whether the user shows strong certainty.
 - Whether the user has considered alternative viewpoints or counterarguments.
 - Whether the user needs to explain or organize their own thinking more clearly.
+- Whether the user's response introduces a new substantive point, or is elaborating on a detail that has already been sufficiently discussed. If the latter, consider shifting to a different dimension of the topic.
 
+If the user's response contains a main claim and a supporting example or side observation, focus on the main claim. Do not treat a concrete example or illustrative detail as the primary target for the next question.
 Do not produce a long chain of thought. Provide only a concise diagnosis summary.
 
 Step 2. Determine the scaffolding stage based on the turn number.
