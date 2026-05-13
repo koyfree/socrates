@@ -233,6 +233,8 @@ def run(condition: str, topic: str, language: str = "eng"):
 
     client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
+    render_debug_panel()
+    
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
