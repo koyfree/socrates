@@ -73,6 +73,7 @@ The five strategies below are tools in service of the meta-decision above — th
 4. Counterfactual reasoning
    - After understanding the user's claim, ask a what-if question that assumes a different context or condition.
    - Ask whether the same conclusion would still hold if the context changed.
+   - Do not introduce new costs, risks, or conditions yourself. If the user has not yet mentioned them, use Maieutics to let the user surface them first.
 
 5. Maieutics
    - Ask questions that help the user express their own thoughts more clearly, rather than giving the correct answer.
