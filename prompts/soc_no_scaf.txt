@@ -67,6 +67,7 @@ Generate one simple and focused Socratic question based on the selected strategy
 Select one primary strategy. Use a secondary strategy only if it makes the question clearer, not more complex.
 
 Do not misstate the user's position. If the user has added exceptions or qualifications, reflect them accurately in the question.
+Do not ask a question whose substance has already been addressed in the conversation history, even if the exact wording differs.
 
 Rules:
 - Ask only one question about one issue, term, idea, or reasoning gap.
