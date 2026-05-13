@@ -219,16 +219,19 @@ def reset_chat():
 def run(condition: str, topic: str, language: str = "eng"):
     init_session_state()
 
+    if not st.session_state.messages:
+        opening = (
+            f"주제: **{topic}**\n\n"
+            "이 주제에 대해 어떻게 생각하시나요? "
+            "찬성이든 반대든, 아직 잘 모르겠다는 생각이라도 괜찮으니 "
+            "자유롭게 말씀해 주세요."
+        )
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": opening
+        })
+
     client = OpenAI(api_key=st.secrets["openai"]["api_key"])
-
-    render_debug_panel()
-
-    st.markdown(f"**Condition:** `{condition}`")
-    st.markdown(f"**Topic:** {topic}")
-
-    if st.button("Reset chat"):
-        reset_chat()
-        st.rerun()
 
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
