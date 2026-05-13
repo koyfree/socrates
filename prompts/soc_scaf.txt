@@ -72,8 +72,7 @@ Use only the following five strategies:
    - Elenchus asks why the user holds a claim — not what they mean or how much. Do not use Elenchus to ask the user to specify, quantify, or elaborate on a term or expression. That is Definition.
 
 4. Counterfactual reasoning
-   - After understanding the user's claim, ask a what-if question that 
-     assumes a different context or condition.
+   - After understanding the user's claim, ask a what-if question that assumes a different context or condition.
    - Ask whether the same conclusion would still hold if the context changed.
 
 5. Maieutics
