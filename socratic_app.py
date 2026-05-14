@@ -167,10 +167,7 @@ def generate_with_dean(
 
 
 def init_session_state():
-    if st.session_state.get("current_topic") != topic:
-        reset_chat()
-    st.session_state.current_topic = topic
-    
+  
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
@@ -222,7 +219,10 @@ def reset_chat():
 
 def run(condition: str, topic: str, language: str = "eng"):
     init_session_state()
-
+    if st.session_state.get("current_topic") != topic:
+        reset_chat()
+        st.session_state.current_topic = topic
+        
     if not st.session_state.messages:
         opening = (
             f"주제: **{topic}**\n\n"
