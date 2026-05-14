@@ -28,6 +28,9 @@ if "selected_condition" not in st.session_state:
 if "selected_topic" not in st.session_state:
     st.session_state.selected_topic = ""
 
+if "started" not in st.session_state:
+    st.session_state.started = False
+
 
 # -----------------------------
 # Topic options
@@ -82,6 +85,13 @@ with st.sidebar:
     st.session_state.selected_condition = condition_key
     st.session_state.selected_topic = topic_text
 
+    if not st.session_state.started:
+        if topic_text:
+            if st.button("▶ 시작", type="primary"):
+                st.session_state.started = True
+                st.session_state.condition_locked = True
+                st.rerun()
+    
     st.markdown("---")
     st.markdown("### Selected settings")
     st.write("Condition:", condition_key)
@@ -97,9 +107,10 @@ if not st.session_state.selected_topic:
     st.warning("주제를 먼저 입력하거나 선택해주세요.")
     st.stop()
 
-# -----------------------------
-# Run chatbot app
-# -----------------------------
+if not st.session_state.started:
+    st.info("왼쪽 사이드바에서 조건과 주제를 선택한 후 시작 버튼을 눌러주세요.")
+    st.stop()
+
 app.run(
     condition=st.session_state.selected_condition,
     topic=st.session_state.selected_topic,
