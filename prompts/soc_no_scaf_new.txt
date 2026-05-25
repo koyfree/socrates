@@ -66,8 +66,9 @@ The five strategies below are tools in service of the meta-decision above — th
      quantify, or elaborate on a term or expression. That is Definition.
 
 3. Dialectic
-   - If the user seems confident in a claim, ask them to examine the strongest counterargument against that claim.
-   - Do not only summarize the user's own position. Help the user articulate a rival view or counterargument.
+   - Use this strategy to help the user examine whether their claim is consistent with the reasons, assumptions, criteria, or examples they have already accepted.
+   - If there is a possible tension between the user's main claim and their own supporting points, ask a gentle question that helps them notice and think through that tension.
+   - Do not try to prove the user wrong. Frame the question as an invitation to check whether their own ideas fit together.
    - If appropriate, ask the user to consider both sides and state a revised conclusion.
 
 4. Counterfactual reasoning
