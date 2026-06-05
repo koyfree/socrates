@@ -1,10 +1,14 @@
 # socratic_app.py
 
 import json
+import uuid
+from datetime import datetime
 from pathlib import Path
 
 import streamlit as st
 from openai import OpenAI
+import gspread
+from google.oauth2.service_account import Credentials
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -12,6 +16,100 @@ PROMPT_DIR = BASE_DIR / "prompts"
 
 MODEL = "gpt-5.2"
 
+SPREADSHEET_ID = "1cZMIsynHca9PoIhDthEdOowHxZ-jG_m5Vacv2AIqPbE"
+
+SCOPES = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive",
+]
+
+
+# -----------------------------
+# Google Sheets
+# -----------------------------
+
+def get_gsheet_client():
+    creds_dict = dict(st.secrets["gcp_service_account"])
+    creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+    return gspread.authorize(creds)
+
+
+def ensure_header(worksheet):
+    header = [
+        "session_id", "topic", "turn_number",
+        "user_message", "assistant_message",
+        "main_claim", "direction", "question_rationale",
+        "primary_strategy", "secondary_strategy",
+        "dean_decision", "was_revised",
+        "full_socratic_json", "full_dean_json",
+        "saved_at"
+    ]
+    existing = worksheet.row_values(1)
+    if existing != header:
+        worksheet.insert_row(header, index=1)
+
+
+def save_to_gsheet(topic: str):
+    try:
+        gc = get_gsheet_client()
+        sh = gc.open_by_key(SPREADSHEET_ID)
+        worksheet = sh.sheet1
+
+        ensure_header(worksheet)
+
+        session_id = st.session_state.get("session_id", "unknown")
+        messages = st.session_state.messages
+        socratic_outputs = st.session_state.socratic_outputs
+        dean_outputs = st.session_state.dean_outputs
+        was_revised_list = st.session_state.was_revised
+
+        # user 메시지만 순서대로 추출
+        user_messages = [m["content"] for m in messages if m["role"] == "user"]
+        # assistant 메시지 (첫 opening 제외)
+        assistant_messages = [m["content"] for m in messages if m["role"] == "assistant"][1:]
+
+        rows = []
+        for i, soc_out in enumerate(socratic_outputs):
+            diagnosis = soc_out.get("diagnosis", {})
+            strategy = soc_out.get("selected_strategy", {})
+
+            user_msg = user_messages[i] if i < len(user_messages) else ""
+            asst_msg = assistant_messages[i] if i < len(assistant_messages) else ""
+            dean_out = dean_outputs[i] if i < len(dean_outputs) else {}
+            was_revised = was_revised_list[i] if i < len(was_revised_list) else False
+
+            row = [
+                session_id,
+                topic,
+                soc_out.get("turn_number", i + 1),
+                user_msg,
+                asst_msg,
+                diagnosis.get("main_claim", ""),
+                diagnosis.get("direction", ""),
+                diagnosis.get("question_rationale", ""),
+                strategy.get("primary", ""),
+                strategy.get("secondary", ""),
+                dean_out.get("decision", ""),
+                str(was_revised),
+                json.dumps(soc_out, ensure_ascii=False),
+                json.dumps(dean_out, ensure_ascii=False),
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            ]
+            rows.append(row)
+
+        if rows:
+            worksheet.append_rows(rows, value_input_option="RAW")
+            return True, len(rows)
+        else:
+            return False, 0
+
+    except Exception as e:
+        return False, str(e)
+
+
+# -----------------------------
+# Prompt loading
+# -----------------------------
 
 def load_prompt(filename: str) -> str:
     prompt_path = PROMPT_DIR / filename
@@ -47,18 +145,15 @@ def call_model_json(client: OpenAI, instructions: str, payload: dict) -> dict:
 
 
 def make_conversation_history() -> list[dict]:
-    """
-    Return the full conversation history currently visible in the chat.
-    This includes user messages and assistant Socratic questions.
-    """
     return [
-        {
-            "role": m["role"],
-            "content": m["content"]
-        }
+        {"role": m["role"], "content": m["content"]}
         for m in st.session_state.messages
     ]
 
+
+# -----------------------------
+# Socratic & Dean modules
+# -----------------------------
 
 def run_socratic_module(
     client: OpenAI,
@@ -71,7 +166,6 @@ def run_socratic_module(
     dean_feedback: str = ""
 ) -> dict:
     instructions = get_socratic_prompt(condition)
-
     payload = {
         "topic": topic,
         "user_response": user_response,
@@ -80,7 +174,6 @@ def run_socratic_module(
         "conversation_history": conversation_history,
         "dean_feedback": dean_feedback,
     }
-
     return call_model_json(client, instructions, payload)
 
 
@@ -94,7 +187,6 @@ def run_dean_module(
     condition: str
 ) -> dict:
     instructions = get_dean_prompt()
-
     payload = {
         "topic": topic,
         "user_response": user_response,
@@ -105,7 +197,6 @@ def run_dean_module(
         "scaffolding_condition": condition,
         "scaffolding_stage": socratic_output.get("scaffolding_stage", "none"),
     }
-
     return call_model_json(client, instructions, payload)
 
 
@@ -166,20 +257,37 @@ def generate_with_dean(
     return revised_socratic, revised_dean, True
 
 
+# -----------------------------
+# Session state
+# -----------------------------
+
 def init_session_state():
-  
     if "messages" not in st.session_state:
         st.session_state.messages = []
-
     if "socratic_outputs" not in st.session_state:
         st.session_state.socratic_outputs = []
-
     if "dean_outputs" not in st.session_state:
         st.session_state.dean_outputs = []
-
     if "was_revised" not in st.session_state:
         st.session_state.was_revised = []
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + str(uuid.uuid4())[:8]
+    if "save_status" not in st.session_state:
+        st.session_state.save_status = None  # None | "success" | "error"
 
+
+def reset_chat():
+    st.session_state.messages = []
+    st.session_state.socratic_outputs = []
+    st.session_state.dean_outputs = []
+    st.session_state.was_revised = []
+    st.session_state.session_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + str(uuid.uuid4())[:8]
+    st.session_state.save_status = None
+
+
+# -----------------------------
+# Debug panel
+# -----------------------------
 
 def render_debug_panel():
     st.sidebar.subheader("Debug panel")
@@ -202,27 +310,23 @@ def render_debug_panel():
 
     st.sidebar.markdown("### Socratic Module")
     st.sidebar.json(meta)
-
     st.sidebar.markdown("### Dean Module")
     st.sidebar.json(latest_dean)
-
     st.sidebar.markdown("### Revised?")
     st.sidebar.write(latest_revised)
 
 
-def reset_chat():
-    st.session_state.messages = []
-    st.session_state.socratic_outputs = []
-    st.session_state.dean_outputs = []
-    st.session_state.was_revised = []
-
+# -----------------------------
+# Main run
+# -----------------------------
 
 def run(condition: str, topic: str, language: str = "eng"):
     init_session_state()
+
     if st.session_state.get("current_topic") != topic:
         reset_chat()
         st.session_state.current_topic = topic
-        
+
     if not st.session_state.messages:
         opening = (
             f"주제: **{topic}**\n\n"
@@ -238,7 +342,29 @@ def run(condition: str, topic: str, language: str = "eng"):
     client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
     render_debug_panel()
-    
+
+    # Save 버튼 (사이드바)
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 대화 저장")
+
+    has_data = len(st.session_state.socratic_outputs) > 0
+
+    if st.sidebar.button("💾 Save to Google Sheets", disabled=not has_data):
+        with st.spinner("저장 중..."):
+            success, result = save_to_gsheet(topic)
+        if success:
+            st.session_state.save_status = ("success", result)
+        else:
+            st.session_state.save_status = ("error", result)
+
+    if st.session_state.save_status:
+        status, result = st.session_state.save_status
+        if status == "success":
+            st.sidebar.success(f"✅ {result}개 턴 저장 완료!")
+        else:
+            st.sidebar.error(f"❌ 저장 실패: {result}")
+
+    # 대화 렌더링
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
@@ -251,7 +377,6 @@ def run(condition: str, topic: str, language: str = "eng"):
             "content": user_input
         })
 
-        # 사용자의 입력을 즉시 화면에 표시
         with st.chat_message("user"):
             st.markdown(user_input)
 
@@ -266,8 +391,6 @@ def run(condition: str, topic: str, language: str = "eng"):
             if item.get("socratic_question")
         ]
 
-        # 핵심 추가 부분:
-        # 현재 user_input까지 포함한 전체 대화 내역을 Socratic module과 Dean module에 전달
         conversation_history = make_conversation_history()
 
         with st.spinner("Chatbot is typing..."):
@@ -303,13 +426,11 @@ def run(condition: str, topic: str, language: str = "eng"):
                     },
                     "socratic_question": "방금 답변에서 가장 중요한 표현 하나를 고른다면 무엇이고, 그 표현을 어떤 의미로 사용했는지 조금 더 설명해볼 수 있을까요?"
                 }
-
                 dean_output = {
                     "decision": "error",
                     "failure_types": [],
                     "feedback": str(e)
                 }
-
                 was_revised = False
                 question = socratic_output["socratic_question"]
 
@@ -322,7 +443,6 @@ def run(condition: str, topic: str, language: str = "eng"):
             "content": question
         })
 
-        # 챗봇 답변도 즉시 화면에 표시
         with st.chat_message("assistant"):
             st.markdown(question)
 
