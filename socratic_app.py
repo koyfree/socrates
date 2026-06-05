@@ -68,8 +68,12 @@ def save_to_gsheet(topic: str):
         # assistant 메시지 (첫 opening 제외)
         assistant_messages = [m["content"] for m in messages if m["role"] == "assistant"][1:]
 
+        last_saved = st.session_state.get("last_saved_turn", 0)
+
         rows = []
         for i, soc_out in enumerate(socratic_outputs):
+            if i < last_saved:
+                continue  # 이미 저장된 턴은 스킵
             diagnosis = soc_out.get("diagnosis", {})
             strategy = soc_out.get("selected_strategy", {})
 
@@ -99,9 +103,10 @@ def save_to_gsheet(topic: str):
 
         if rows:
             worksheet.append_rows(rows, value_input_option="RAW")
+            st.session_state.last_saved_turn = len(socratic_outputs)
             return True, len(rows)
         else:
-            return False, 0
+            return "already_saved", 0
 
     except Exception as e:
         return False, str(e)
@@ -283,6 +288,7 @@ def reset_chat():
     st.session_state.was_revised = []
     st.session_state.session_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + str(uuid.uuid4())[:8]
     st.session_state.save_status = None
+    st.session_state.last_saved_turn = 0
 
 
 # -----------------------------
@@ -352,8 +358,10 @@ def run(condition: str, topic: str, language: str = "eng"):
     if st.sidebar.button("💾 Save to Google Sheets", disabled=not has_data):
         with st.spinner("저장 중..."):
             success, result = save_to_gsheet(topic)
-        if success:
+        if success == True:
             st.session_state.save_status = ("success", result)
+        elif success == "already_saved":
+            st.session_state.save_status = ("already_saved", result)
         else:
             st.session_state.save_status = ("error", result)
 
@@ -361,6 +369,8 @@ def run(condition: str, topic: str, language: str = "eng"):
         status, result = st.session_state.save_status
         if status == "success":
             st.sidebar.success(f"✅ {result}개 턴 저장 완료!")
+        elif status == "already_saved":
+            st.sidebar.info("ℹ️ 새로 저장할 턴이 없습니다.")
         else:
             st.sidebar.error(f"❌ 저장 실패: {result}")
 
