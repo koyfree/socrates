@@ -1,36 +1,25 @@
 # main.py
-
 import streamlit as st
 import socratic_app as app
-
 
 # -----------------------------
 # Page settings
 # -----------------------------
-
 st.set_page_config(
     page_title="Socratic Chatbot Internal Test",
     layout="wide"
 )
-
 st.title("Socratic Chatbot Internal Test")
-
 
 # -----------------------------
 # Session state
 # -----------------------------
 if "condition_locked" not in st.session_state:
     st.session_state.condition_locked = False
-
-if "selected_condition" not in st.session_state:
-    st.session_state.selected_condition = "scaffolding"
-
 if "selected_topic" not in st.session_state:
     st.session_state.selected_topic = ""
-
 if "started" not in st.session_state:
     st.session_state.started = False
-
 
 # -----------------------------
 # Topic options
@@ -45,30 +34,17 @@ TOPIC_OPTIONS = {
     "기타(직접 입력)": ""
 }
 
-
 # -----------------------------
-# Sidebar: condition and topic selection
+# Sidebar: topic selection only
 # -----------------------------
 with st.sidebar:
     st.header("Experiment Settings")
 
-    condition_label = st.radio(
-        "Experimental condition",
-        options=["Scaffolding", "Non-scaffolding"],
-        index=0 if st.session_state.selected_condition == "scaffolding" else 1,
+    topic_label = st.selectbox(
+        "Controversial topic",
+        options=list(TOPIC_OPTIONS.keys()),
         disabled=st.session_state.condition_locked
     )
-
-    if condition_label == "Scaffolding":
-        condition_key = "scaffolding"
-    else:
-        condition_key = "non_scaffolding"
-
-    topic_label = st.selectbox(
-    "Controversial topic",
-    options=list(TOPIC_OPTIONS.keys()),
-    disabled=st.session_state.condition_locked
-)
 
     if topic_label == "기타(직접 입력)":
         custom_topic = st.text_area(
@@ -77,12 +53,10 @@ with st.sidebar:
             height=80,
             disabled=st.session_state.condition_locked
         )
-
         topic_text = custom_topic.strip()
     else:
         topic_text = TOPIC_OPTIONS[topic_label]
 
-    st.session_state.selected_condition = condition_key
     st.session_state.selected_topic = topic_text
 
     if not st.session_state.started:
@@ -91,10 +65,10 @@ with st.sidebar:
                 st.session_state.started = True
                 st.session_state.condition_locked = True
                 st.rerun()
-    
+
     st.markdown("---")
     st.markdown("### Selected settings")
-    st.write("Condition:", condition_key)
+    st.write("Condition: non_scaffolding (fixed)")
     st.write("Topic:", topic_text if topic_text else "직접 입력 대기 중")
 
     if st.button("Reset entire test"):
@@ -102,17 +76,16 @@ with st.sidebar:
             del st.session_state[key]
         st.rerun()
 
-
 if not st.session_state.selected_topic:
     st.warning("주제를 먼저 입력하거나 선택해주세요.")
     st.stop()
 
 if not st.session_state.started:
-    st.info("왼쪽 사이드바에서 조건과 주제를 선택한 후 시작 버튼을 눌러주세요.")
+    st.info("왼쪽 사이드바에서 주제를 선택한 후 시작 버튼을 눌러주세요.")
     st.stop()
 
 app.run(
-    condition=st.session_state.selected_condition,
+    condition="non_scaffolding",
     topic=st.session_state.selected_topic,
     language="eng"
 )
