@@ -1,13 +1,21 @@
+# main.py
+
 import streamlit as st
 import socratic_app as app
 from pathlib import Path
 
+# -----------------------------
+# Page settings
+# -----------------------------
 st.set_page_config(
     page_title="Socratic Chatbot Internal Test",
     layout="wide"
 )
 st.title("Socratic Chatbot Internal Test")
 
+# -----------------------------
+# Session state
+# -----------------------------
 if "condition_locked" not in st.session_state:
     st.session_state.condition_locked = False
 if "selected_topic" not in st.session_state:
@@ -15,6 +23,9 @@ if "selected_topic" not in st.session_state:
 if "started" not in st.session_state:
     st.session_state.started = False
 
+# -----------------------------
+# Topic options
+# -----------------------------
 TOPIC_OPTIONS = {
     "기본소득": "기본소득 제도를 도입해야 하는가?",
     "검찰개혁": "검찰 권한을 축소하는 방향의 검찰개혁은 필요한가?",
@@ -25,10 +36,13 @@ TOPIC_OPTIONS = {
     "기타(직접 입력)": ""
 }
 
+# -----------------------------
+# Sidebar
+# -----------------------------
 with st.sidebar:
     st.header("Experiment Settings")
 
-    # 프롬프트 선택
+    # 프롬프트 선택: prompt_test/ 폴더 파일 목록 자동 읽기
     prompt_test_dir = Path("prompt_test")
     prompt_files = sorted([f.name for f in prompt_test_dir.glob("*.txt")]) if prompt_test_dir.exists() else []
 
@@ -61,6 +75,7 @@ with st.sidebar:
 
     st.session_state.selected_topic = topic_text
 
+    # 시작 버튼
     if not st.session_state.started:
         if topic_text and selected_prompt:
             if st.button("▶ 시작", type="primary"):
@@ -80,6 +95,9 @@ with st.sidebar:
             del st.session_state[key]
         st.rerun()
 
+# -----------------------------
+# Guard
+# -----------------------------
 if not st.session_state.selected_topic:
     st.warning("주제를 먼저 입력하거나 선택해주세요.")
     st.stop()
@@ -88,6 +106,9 @@ if not st.session_state.started:
     st.info("왼쪽 사이드바에서 주제를 선택한 후 시작 버튼을 눌러주세요.")
     st.stop()
 
+# -----------------------------
+# Run
+# -----------------------------
 app.run(
     condition="non_scaffolding",
     topic=st.session_state.selected_topic,
