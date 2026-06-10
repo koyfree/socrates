@@ -13,6 +13,7 @@ from google.oauth2.service_account import Credentials
 
 BASE_DIR = Path(__file__).resolve().parent
 PROMPT_DIR = BASE_DIR / "prompts"
+PROMPT_TEST_DIR = BASE_DIR / "prompt_test"
 
 MODEL = "gpt-5.2"
 
@@ -36,7 +37,7 @@ def get_gsheet_client():
 
 def ensure_header(worksheet):
     header = [
-        "session_id", "topic", "turn_number",
+        "session_id", "topic", "prompt_file", "turn_number",  # ← prompt_file 추가
         "user_message", "assistant_message",
         "main_claim", "direction", "question_rationale",
         "primary_strategy", "secondary_strategy",
@@ -49,7 +50,7 @@ def ensure_header(worksheet):
         worksheet.insert_row(header, index=1)
 
 
-def save_to_gsheet(topic: str):
+def save_to_gsheet(topic: str, prompt_file: str):  # ← prompt_file 파라미터 추가
     try:
         gc = get_gsheet_client()
         sh = gc.open_by_key(SPREADSHEET_ID)
@@ -85,6 +86,7 @@ def save_to_gsheet(topic: str):
             row = [
                 session_id,
                 topic,
+                prompt_file or "",           # ← prompt_file 기록
                 soc_out.get("turn_number", i + 1),
                 user_msg,
                 asst_msg,
@@ -121,13 +123,10 @@ def load_prompt(filename: str) -> str:
     return prompt_path.read_text(encoding="utf-8")
 
 
-def get_socratic_prompt(condition: str) -> str:
-    if condition == "scaffolding":
-        return load_prompt("soc_scaf_new.txt")
-    elif condition == "non_scaffolding":
-        return load_prompt("soc_no_scaf_new.txt")
-    else:
-        raise ValueError(f"Unknown condition: {condition}")
+def get_socratic_prompt_from_file(filename: str) -> str:
+    """prompt_test/ 폴더에서 Socratic 프롬프트를 직접 읽기"""
+    prompt_path = PROMPT_TEST_DIR / filename
+    return prompt_path.read_text(encoding="utf-8")
 
 
 def get_dean_prompt() -> str:
@@ -162,7 +161,7 @@ def make_conversation_history() -> list[dict]:
 
 def run_socratic_module(
     client: OpenAI,
-    condition: str,
+    prompt_file: str,           # ← condition 대신 prompt_file 직접 받기
     topic: str,
     user_response: str,
     turn_number: int,
@@ -170,7 +169,7 @@ def run_socratic_module(
     conversation_history: list[dict],
     dean_feedback: str = ""
 ) -> dict:
-    instructions = get_socratic_prompt(condition)
+    instructions = get_socratic_prompt_from_file(prompt_file)   # ← 변경
     payload = {
         "topic": topic,
         "user_response": user_response,
@@ -208,6 +207,7 @@ def run_dean_module(
 def generate_with_dean(
     client: OpenAI,
     condition: str,
+    prompt_file: str,           # ← 추가
     topic: str,
     user_response: str,
     turn_number: int,
@@ -217,7 +217,7 @@ def generate_with_dean(
 
     first_socratic = run_socratic_module(
         client=client,
-        condition=condition,
+        prompt_file=prompt_file,    # ← 변경
         topic=topic,
         user_response=user_response,
         turn_number=turn_number,
@@ -240,7 +240,7 @@ def generate_with_dean(
 
     revised_socratic = run_socratic_module(
         client=client,
-        condition=condition,
+        prompt_file=prompt_file,    # ← 변경
         topic=topic,
         user_response=user_response,
         turn_number=turn_number,
@@ -279,6 +279,8 @@ def init_session_state():
         st.session_state.session_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + str(uuid.uuid4())[:8]
     if "save_status" not in st.session_state:
         st.session_state.save_status = None  # None | "success" | "error"
+    if "last_saved_turn" not in st.session_state:
+        st.session_state.last_saved_turn = 0
 
 
 def reset_chat():
@@ -326,7 +328,7 @@ def render_debug_panel():
 # Main run
 # -----------------------------
 
-def run(condition: str, topic: str, language: str = "eng"):
+def run(condition: str, topic: str, language: str = "eng", prompt_file: str = None):  # ← prompt_file 추가
     init_session_state()
 
     if st.session_state.get("current_topic") != topic:
@@ -357,7 +359,7 @@ def run(condition: str, topic: str, language: str = "eng"):
 
     if st.sidebar.button("💾 Save to Google Sheets", disabled=not has_data):
         with st.spinner("저장 중..."):
-            success, result = save_to_gsheet(topic)
+            success, result = save_to_gsheet(topic, prompt_file or "")   # ← prompt_file 전달
         if success == True:
             st.session_state.save_status = ("success", result)
         elif success == "already_saved":
@@ -408,6 +410,7 @@ def run(condition: str, topic: str, language: str = "eng"):
                 socratic_output, dean_output, was_revised = generate_with_dean(
                     client=client,
                     condition=condition,
+                    prompt_file=prompt_file,    # ← 추가
                     topic=topic,
                     user_response=user_input,
                     turn_number=turn_number,
