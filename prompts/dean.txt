@@ -68,7 +68,7 @@ Decision rules:
 Output format:
 
 {
-  "previous Socratic question": "",
+  "evaluated Socratic question": "",
   "decision": "ok | revise",
   "failure_types": [],
   "feedback": ""
