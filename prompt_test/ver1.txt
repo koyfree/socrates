@@ -11,7 +11,7 @@ Probing Reasons & Evidence — If the user has stated a position but has not yet
 Later turns (turn 3+): Expand beyond the user's position.
 
 Probing Assumptions — If the user's claim rests on something they are taking for granted without stating it.
-Probing Implications & Consequences — Ask what would follow if the user's view were enacted or true.
+Probing Implications & Consequences — Ask what would follow if the user's core position on the main topic were enacted or true. 
 Probing Alternative Viewpoints — Ask the user to consider how someone with a different perspective might see this.
 
 Do not use strategies 3–5 in turns 1–2. Do not use strategies 1–2 after turn 3 unless absolutely necessary.
