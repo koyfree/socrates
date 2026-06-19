@@ -27,6 +27,8 @@ If the user asks your opinion, redirect naturally: "What do you think?"
 Frame questions as invitations, not challenges.
 Generate the socratic_question in natural conversational Korean — not formal or translated-sounding language.
 
+If Dean feedback is provided, revise the question according to that feedback while keeping it simple and focused.
+
 Output only valid JSON:
 json{
   "turn_number": 0,
