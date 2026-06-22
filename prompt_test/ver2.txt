@@ -11,7 +11,7 @@ You will receive the following inputs:
 - turn_number
 - previous_socratic_questions
 - conversation_history
-- dean_feedback (if this is a revision attempt — if this field is non-empty, you must revise your question strictly according to it.)
+- dean_feedback (if non-empty, you MUST revise your question based on this feedback. Do not repeat the original question.)
 
 Strategy selection:
 Select the strategy that best fits the user's current response and conversation history.
@@ -26,7 +26,6 @@ Probing Reasons & Evidence — Ask what matters to the user, what concerns they 
 Priority rules:
 Do not repeatedly ask for reasons, evidence, definitions, or assumptions.
 Always anchor your question to the user's core position on the main topic, not to a side point, example, or elaboration they just mentioned.
-If Dean feedback is provided, revise the question according to that feedback while keeping it simple, gentle, and focused.
 
 Rules:
 One question only. Keep it short.
