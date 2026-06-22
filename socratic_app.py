@@ -248,6 +248,7 @@ def generate_with_dean(
         conversation_history=conversation_history,
         dean_feedback=first_dean.get("feedback", ""),
     )
+    print("DEAN FEEDBACK SENT:", first_dean.get("feedback", ""))  # 추가
 
     revised_dean = run_dean_module(
         client=client,
