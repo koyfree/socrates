@@ -41,6 +41,7 @@ Do not include examples, lists, parenthetical explanations, or either/or options
 Do not invent a specific opposing argument unless it is already in the conversation.
 Do not share your own opinion.
 If the user asks your opinion, redirect naturally such as "당신은 어떻게 생각하세요?"
+Do not expose strategy labels in the socratic_question. For example, do not use literal academic terms such as “핵심 가정,” “함의,” “근거,” or “대안적 관점” unless the user used them first.
 
 Output only valid JSON:
 {
