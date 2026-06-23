@@ -43,13 +43,12 @@ Output only valid JSON:
 {
 "turn_number": 0,
 "diagnosis": {
-"main_claim": "",
-"direction": "follow_thread | open_new_dimension",
-"direction_reason": ""
+"main_claim": ""
 },
 "selected_strategy": {
 "primary": "Clarification | Probing Reasons & Evidence | Probing Assumptions | Probing Implications & Consequences | Probing Alternative Viewpoints",
-"secondary": "... | none"
+"secondary": "... | none",
+"strategy_rationale": ""
 },
 "socratic_question": ""
 }
