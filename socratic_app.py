@@ -161,15 +161,16 @@ def make_conversation_history() -> list[dict]:
 
 def run_socratic_module(
     client: OpenAI,
-    prompt_file: str,           # ← condition 대신 prompt_file 직접 받기
+    prompt_file: str,
     topic: str,
     user_response: str,
     turn_number: int,
     previous_questions: list[str],
     conversation_history: list[dict],
-    dean_feedback: str = ""
+    dean_feedback: str = "",
+    rejected_socratic_question: str = ""
 ) -> dict:
-    instructions = get_socratic_prompt_from_file(prompt_file)   # ← 변경
+    instructions = get_socratic_prompt_from_file(prompt_file)
     payload = {
         "topic": topic,
         "user_response": user_response,
@@ -177,9 +178,9 @@ def run_socratic_module(
         "previous_socratic_questions": previous_questions,
         "conversation_history": conversation_history,
         "dean_feedback": dean_feedback,
+        "rejected_socratic_question": rejected_socratic_question,
     }
     return call_model_json(client, instructions, payload)
-
 
 def run_dean_module(
     client: OpenAI,
@@ -235,12 +236,16 @@ def generate_with_dean(
         condition=condition,
     )
 
+    print("FIRST SOCRATIC QUESTION:", first_socratic.get("socratic_question", ""))
+    print("FIRST DEAN DECISION:", first_dean.get("decision", ""))
+    print("FIRST DEAN FEEDBACK:", first_dean.get("feedback", ""))
+
     if first_dean.get("decision") == "ok":
         return first_socratic, first_dean, False
 
     revised_socratic = run_socratic_module(
         client=client,
-        prompt_file=prompt_file,    # ← 변경
+        prompt_file=prompt_file,
         topic=topic,
         user_response=user_response,
         turn_number=turn_number,
@@ -248,7 +253,9 @@ def generate_with_dean(
         conversation_history=conversation_history,
         dean_feedback=first_dean.get("feedback", ""),
     )
-    print("DEAN FEEDBACK SENT:", first_dean.get("feedback", ""))  # 추가
+
+    print("DEAN FEEDBACK SENT:", first_dean.get("feedback", ""))
+    print("REVISED SOCRATIC QUESTION:", revised_socratic.get("socratic_question", ""))
 
     revised_dean = run_dean_module(
         client=client,
