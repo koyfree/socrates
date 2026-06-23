@@ -39,8 +39,8 @@ def ensure_header(worksheet):
     header = [
         "session_id", "topic", "prompt_file", "turn_number",  # ← prompt_file 추가
         "user_message", "assistant_message",
-        "main_claim", "direction", "question_rationale",
-        "primary_strategy", "secondary_strategy",
+        "main_claim", 
+        "primary_strategy", "secondary_strategy", "strategy_rationale",
         "dean_decision", "was_revised",
         "full_socratic_json", "full_dean_json",
         "saved_at"
@@ -91,10 +91,9 @@ def save_to_gsheet(topic: str, prompt_file: str):  # ← prompt_file 파라미�
                 user_msg,
                 asst_msg,
                 diagnosis.get("main_claim", ""),
-                diagnosis.get("direction", ""),
-                diagnosis.get("question_rationale", ""),
                 strategy.get("primary", ""),
                 strategy.get("secondary", ""),
+                strategy.get("strategy_rationale", ""),
                 dean_out.get("decision", ""),
                 str(was_revised),
                 json.dumps(soc_out, ensure_ascii=False),
