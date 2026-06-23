@@ -86,7 +86,6 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("### Selected settings")
-    st.write("Condition: non_scaffolding (fixed)")
     st.write("Socratic prompt:", st.session_state.get("selected_prompt", selected_prompt) or "선택 대기 중")
     st.write("Topic:", topic_text if topic_text else "직접 입력 대기 중")
 
