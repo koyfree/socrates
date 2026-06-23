@@ -236,10 +236,15 @@ def generate_with_dean(
         condition=condition,
     )
 
-    print("FIRST SOCRATIC QUESTION:", first_socratic.get("socratic_question", ""))
-    print("FIRST DEAN DECISION:", first_dean.get("decision", ""))
-    print("FIRST DEAN FEEDBACK:", first_dean.get("feedback", ""))
-
+    st.session_state.debug_trace = {
+        "first_socratic_question": first_socratic.get("socratic_question", ""),
+        "first_dean_decision": first_dean.get("decision", ""),
+        "first_dean_feedback": first_dean.get("feedback", ""),
+        "revised_socratic_question": "",
+        "final_question_shown": first_socratic.get("socratic_question", ""),
+    }
+    
+    decision = first_dean.get("decision", "").strip().lower()
     if first_dean.get("decision") == "ok":
         return first_socratic, first_dean, False
 
@@ -254,18 +259,8 @@ def generate_with_dean(
         dean_feedback=first_dean.get("feedback", ""),
     )
 
-    print("DEAN FEEDBACK SENT:", first_dean.get("feedback", ""))
-    print("REVISED SOCRATIC QUESTION:", revised_socratic.get("socratic_question", ""))
-
-    revised_dean = run_dean_module(
-        client=client,
-        topic=topic,
-        user_response=user_response,
-        previous_questions=previous_questions,
-        conversation_history=conversation_history,
-        socratic_output=revised_socratic,
-        condition=condition,
-    )
+    st.session_state.debug_trace["revised_socratic_question"] = revised_socratic.get("socratic_question", "")
+    st.session_state.debug_trace["final_question_shown"] = revised_socratic.get("socratic_question", "")
 
     return revised_socratic, revised_dean, True
 
@@ -283,6 +278,8 @@ def init_session_state():
         st.session_state.dean_outputs = []
     if "was_revised" not in st.session_state:
         st.session_state.was_revised = []
+    if "debug_trace" not in st.session_state:
+        st.session_state.debug_trace = {}
     if "session_id" not in st.session_state:
         st.session_state.session_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + str(uuid.uuid4())[:8]
     if "save_status" not in st.session_state:
@@ -330,6 +327,8 @@ def render_debug_panel():
     st.sidebar.json(latest_dean)
     st.sidebar.markdown("### Revised?")
     st.sidebar.write(latest_revised)
+    st.sidebar.markdown("### Revision Trace")
+    st.sidebar.json(st.session_state.get("debug_trace", {}))
 
 
 # -----------------------------
