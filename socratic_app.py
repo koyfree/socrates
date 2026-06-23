@@ -315,10 +315,9 @@ def render_debug_panel():
 
     meta = {
         "turn_number": latest_socratic.get("turn_number"),
-        "scaffolding_condition": latest_socratic.get("scaffolding_condition"),
-        "scaffolding_stage": latest_socratic.get("scaffolding_stage"),
         "diagnosis": latest_socratic.get("diagnosis"),
         "selected_strategy": latest_socratic.get("selected_strategy"),
+        "socratic_question": latest_socratic.get("socratic_question"),
     }
 
     st.sidebar.markdown("### Socratic Module")
