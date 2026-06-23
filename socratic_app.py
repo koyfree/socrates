@@ -262,7 +262,7 @@ def generate_with_dean(
     st.session_state.debug_trace["revised_socratic_question"] = revised_socratic.get("socratic_question", "")
     st.session_state.debug_trace["final_question_shown"] = revised_socratic.get("socratic_question", "")
 
-    return revised_socratic, revised_dean, True
+    return revised_socratic, first_dean, True
 
 
 # -----------------------------
