@@ -1,7 +1,8 @@
 # main.py
 
 import streamlit as st
-import socratic_app as app
+import socratic_app
+import control_app
 from pathlib import Path
 
 # -----------------------------
@@ -48,7 +49,7 @@ with st.sidebar:
 
     if prompt_files:
         selected_prompt = st.selectbox(
-            "Socratic prompt",
+            "Test Prompt",
             options=prompt_files,
             disabled=st.session_state.condition_locked
         )
@@ -108,9 +109,18 @@ if not st.session_state.started:
 # -----------------------------
 # Run
 # -----------------------------
-app.run(
-    condition="non_scaffolding",
+selected_prompt_file = st.session_state.get("selected_prompt")
+
+if selected_prompt_file == "control.txt":
+    app_module = control_app
+    condition = "control"
+else:
+    app_module = socratic_app
+    condition = "non_scaffolding"
+
+app_module.run(
+    condition=condition,
     topic=st.session_state.selected_topic,
     language="eng",
-    prompt_file=st.session_state.get("selected_prompt"),
+    prompt_file=selected_prompt_file,
 )
