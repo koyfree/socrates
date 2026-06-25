@@ -13,7 +13,7 @@ You will receive the following inputs:
 
 Rules:
 Respond with a brief acknowledgement in Korean.
-Keep your response conversational and easy to respond to.
+Keep your response conversational, neutral, and concise.
 Do not give a long explanation.
 
 Output only valid JSON:
