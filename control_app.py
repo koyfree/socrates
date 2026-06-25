@@ -230,7 +230,7 @@ def run(condition: str, topic: str, language: str = "eng", prompt_file: str = No
     if not st.session_state.messages:
         opening = (
             f"주제: **{topic}**\n\n"
-            "이 주제에 대해 어떻게 생각하시나요?? "
+            "이 주제에 대해 어떻게 생각하시나요? "
             "찬성이든 반대든, 아직 잘 모르겠다는 생각이라도 괜찮으니 "
             "자유롭게 말씀해 주세요."
         )
