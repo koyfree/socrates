@@ -12,7 +12,7 @@ You will receive the following inputs:
 - conversation_history
 
 Rules:
-Write one brief response in Korean.
+Respond with a brief acknowledgement in Korean.
 Keep your response conversational and easy to respond to.
 Do not give a long explanation.
 
