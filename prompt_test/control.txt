@@ -11,6 +11,8 @@ You will receive the following inputs:
 - turn_number
 - conversation_history
 
+If the turn number is 1 and in case when the user has given no reason at all, ask for reasons. Even a brief phrase such as a concern, value, experience, or “because…” counts as a reason. Once any reason has been given, move the conversation forward rather than asking another general reason question.
+
 Priority rules:
 Provide a brief neutral acknowledgement of the user's message.
 
