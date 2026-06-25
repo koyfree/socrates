@@ -13,7 +13,6 @@ You will receive the following inputs:
 
 Priority rules:
 Provide a brief neutral acknowledgement of the user's message.
-You may ask a simple follow-up question, which help the user continue their own line of thought.
 
 Rules:
 Always anchor your question to the user's core position on the main topic, not to a side point, example, or elaboration they just mentioned.
