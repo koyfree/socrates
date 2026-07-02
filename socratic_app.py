@@ -128,8 +128,16 @@ def get_socratic_prompt_from_file(filename: str) -> str:
     return prompt_path.read_text(encoding="utf-8")
 
 
-def get_dean_prompt() -> str:
-    return load_prompt("dean.txt")
+def get_dean_prompt_from_socratic_file(prompt_file: str) -> str:
+    dean_map = {
+        "soc_pure.txt": "dean_pure.txt",
+        "soc_add.txt": "dean_add.txt",
+    }
+
+    if prompt_file not in dean_map:
+        raise ValueError(f"Unknown socratic prompt file: {prompt_file}")
+
+    return load_prompt(dean_map[prompt_file])
 
 
 def safe_json_loads(text: str) -> dict:
@@ -183,6 +191,7 @@ def run_socratic_module(
 
 def run_dean_module(
     client: OpenAI,
+    prompt_file: str,
     topic: str,
     user_response: str,
     previous_questions: list[str],
@@ -190,7 +199,7 @@ def run_dean_module(
     socratic_output: dict,
     condition: str
 ) -> dict:
-    instructions = get_dean_prompt()
+    instructions = get_dean_prompt_from_socratic_file(prompt_file)
     payload = {
         "topic": topic,
         "user_response": user_response,
@@ -227,6 +236,7 @@ def generate_with_dean(
 
     first_dean = run_dean_module(
         client=client,
+        prompt_file=prompt_file,
         topic=topic,
         user_response=user_response,
         previous_questions=previous_questions,
@@ -244,7 +254,7 @@ def generate_with_dean(
     }
     
     decision = first_dean.get("decision", "").strip().lower()
-    if first_dean.get("decision") == "ok":
+    if decision == "ok":
         return first_socratic, first_dean, False
 
     revised_socratic = run_socratic_module(
