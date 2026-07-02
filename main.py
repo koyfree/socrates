@@ -111,9 +111,14 @@ if not st.session_state.started:
 # -----------------------------
 selected_prompt_file = st.session_state.get("selected_prompt")
 
-if selected_prompt_file == "control.txt":
+CONTROL_PROMPTS = {
+    "control.txt": "control",
+    "control_simple.txt": "control_simple",
+}
+
+if selected_prompt_file in CONTROL_PROMPTS:
     app_module = control_app
-    condition = "control"
+    condition = CONTROL_PROMPTS[selected_prompt_file]
 else:
     app_module = socratic_app
     condition = "non_scaffolding"
