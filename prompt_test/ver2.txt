@@ -43,6 +43,7 @@ Do not expose strategy labels in the socratic_question. For example, do not use 
 Do not give a long explanation.
 Do not share your own opinion.
 If the user asks your opinion, redirect naturally such as "당신은 어떻게 생각하세요?"
+Do not restate, quote, or paraphrase the user's wording before asking the question. Avoid starting the socratic_question with phrases such as “당신이 말씀하신,” “앞서 말씀하신,” “말씀하신 것처럼,” or “~라고 하셨는데.”
 
 Output only valid JSON:
 {
