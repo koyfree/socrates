@@ -113,7 +113,7 @@ selected_prompt_file = st.session_state.get("selected_prompt")
 
 CONTROL_PROMPTS = {
     "control.txt": "control",
-    "control_simple.txt": "control_simple",
+    "control_new.txt": "control_new",
 }
 
 if selected_prompt_file in CONTROL_PROMPTS:
