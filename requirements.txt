@@ -2,3 +2,7 @@ streamlit
 openai>=1.0.0
 gspread
 google-auth
+fastapi
+uvicorn[standard]
+pydantic
+python-dotenv
