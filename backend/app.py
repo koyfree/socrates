@@ -17,18 +17,15 @@ from pydantic import BaseModel, Field
 BASE_DIR = Path(__file__).resolve().parent
 PROMPT_DIR = BASE_DIR / "prompts"
 
-# 연구 도중 모델 동작이 바뀌지 않도록 고정 스냅샷 사용
 MODEL = "gpt-5.2-2025-12-11"
 
 
 app = FastAPI(
     title="Socrates Chatbot API",
-    version="0.3.0",
+    version="0.4.0",
 )
 
 
-# 현재는 Qualtrics 연결 테스트를 위해 모든 출처를 허용합니다.
-# 실제 실험 전에는 보안 설정을 추가할 예정입니다.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -75,6 +72,11 @@ class ChatResponse(BaseModel):
     condition: str
     turn_number: int
 
+    # Qualtrics의 __js_module_log에 저장할 내부 기록
+    module_record: dict = Field(
+        default_factory=dict
+    )
+
 
 # ---------------------------------
 # 기본 엔드포인트
@@ -100,11 +102,6 @@ def health_check() -> dict[str, str]:
 
 @lru_cache(maxsize=10)
 def load_prompt(filename: str) -> str:
-    """
-    backend/prompts 폴더에서 프롬프트를 읽습니다.
-    한 번 읽은 프롬프트는 메모리에 저장해 재사용합니다.
-    """
-
     prompt_path = PROMPT_DIR / filename
 
     if not prompt_path.exists():
@@ -117,33 +114,35 @@ def load_prompt(filename: str) -> str:
     ).strip()
 
 
+@lru_cache(maxsize=1)
+def get_openai_client() -> OpenAI:
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    if not api_key:
+        raise RuntimeError(
+            "OPENAI_API_KEY is not configured."
+        )
+
+    return OpenAI(api_key=api_key)
+
+
 def safe_json_loads(text: str) -> dict:
-    """
-    모델이 반환한 문자열에서 JSON을 추출합니다.
-
-    ```json 코드 블록이나 앞뒤의 짧은 설명이
-    섞이는 경우도 처리합니다.
-    """
-
     cleaned = text.strip()
 
-    cleaned = cleaned.replace(
-        "```json",
-        ""
-    ).replace(
-        "```JSON",
-        ""
-    ).replace(
-        "```",
-        ""
-    ).strip()
+    cleaned = (
+        cleaned
+        .replace("```json", "")
+        .replace("```JSON", "")
+        .replace("```", "")
+        .strip()
+    )
 
     first_brace = cleaned.find("{")
     last_brace = cleaned.rfind("}")
 
     if first_brace == -1 or last_brace == -1:
         raise ValueError(
-            "The model response does not contain a JSON object."
+            "The response does not contain a JSON object."
         )
 
     json_text = cleaned[
@@ -154,35 +153,19 @@ def safe_json_loads(text: str) -> dict:
 
     if not isinstance(parsed, dict):
         raise ValueError(
-            "The model response is not a JSON object."
+            "The response is not a JSON object."
         )
 
     return parsed
 
 
-def get_openai_client() -> OpenAI:
-    api_key = os.getenv("OPENAI_API_KEY")
-
-    if not api_key:
-        raise HTTPException(
-            status_code=500,
-            detail="OPENAI_API_KEY is not configured.",
-        )
-
-    return OpenAI(api_key=api_key)
-
-
 def call_model_json(
-    client: OpenAI,
     instructions: str,
     payload: dict,
 ) -> dict:
-    """
-    프롬프트 파일을 instructions로,
-    대화 정보를 JSON payload로 전달합니다.
-    """
-
     try:
+        client = get_openai_client()
+
         response = client.responses.create(
             model=MODEL,
             instructions=instructions,
@@ -190,7 +173,7 @@ def call_model_json(
                 payload,
                 ensure_ascii=False,
             ),
-            max_output_tokens=1200,
+            max_output_tokens=1600,
         )
 
     except Exception as error:
@@ -202,7 +185,7 @@ def call_model_json(
 
         raise HTTPException(
             status_code=502,
-            detail="Failed to generate chatbot response.",
+            detail="Failed to generate model response.",
         ) from error
 
     raw_text = response.output_text.strip()
@@ -234,49 +217,78 @@ def call_model_json(
         ) from error
 
 
+def build_conversation_history(
+    request: ChatRequest
+) -> list[dict]:
+    """
+    기존 Streamlit 코드와 마찬가지로
+    현재 사용자 발화까지 포함한 전체 대화 기록을 만듭니다.
+    """
+
+    history = [
+        {
+            "role": message.role,
+            "content": message.content,
+        }
+        for message
+        in request.conversation_history
+    ]
+
+    history.append(
+        {
+            "role": "user",
+            "content": request.user_message,
+        }
+    )
+
+    return history
+
+
+def get_previous_socratic_questions(
+    request: ChatRequest
+) -> list[str]:
+    """
+    대화 기록 속 assistant 발화 중
+    첫 번째 opening 메시지를 제외한 이전 질문들을 추출합니다.
+    """
+
+    assistant_messages = [
+        message.content
+        for message
+        in request.conversation_history
+        if message.role == "assistant"
+    ]
+
+    if len(assistant_messages) <= 1:
+        return []
+
+    return assistant_messages[1:]
+
+
 # ---------------------------------
 # Control 조건
 # ---------------------------------
 
 def generate_control_reply(
     request: ChatRequest
-) -> str:
-    """
-    backend/prompts/control.txt를 사용해
-    실제 Control 응답을 생성합니다.
-    """
+) -> tuple[str, dict]:
 
-    try:
-        instructions = load_prompt(
-            "control.txt"
-        )
+    instructions = load_prompt(
+        "control.txt"
+    )
 
-    except FileNotFoundError as error:
-        print(str(error))
-
-        raise HTTPException(
-            status_code=500,
-            detail="Control prompt file was not found.",
-        ) from error
+    conversation_history = (
+        build_conversation_history(request)
+    )
 
     payload = {
         "topic": request.topic,
         "user_response": request.user_message,
         "turn_number": request.turn_number,
-        "conversation_history": [
-            {
-                "role": message.role,
-                "content": message.content,
-            }
-            for message
-            in request.conversation_history
-        ],
+        "conversation_history": conversation_history,
     }
 
-    client = get_openai_client()
-
     control_output = call_model_json(
-        client=client,
         instructions=instructions,
         payload=payload,
     )
@@ -297,13 +309,255 @@ def generate_control_reply(
 
         raise HTTPException(
             status_code=502,
+            detail="The control response was missing.",
+        )
+
+    module_record = {
+        "turn_number": request.turn_number,
+        "condition": request.condition,
+        "prompt_file": "control.txt",
+        "control_output": control_output,
+        "final_reply": reply.strip(),
+    }
+
+    return reply.strip(), module_record
+
+
+# ---------------------------------
+# Socratic·Dean 조건
+# ---------------------------------
+
+def get_socratic_prompt_file(
+    condition: str
+) -> str:
+
+    prompt_map = {
+        "soc_pure": "soc_pure.txt",
+        "soc_add": "soc_add.txt",
+    }
+
+    if condition not in prompt_map:
+        raise ValueError(
+            f"Unknown Socratic condition: {condition}"
+        )
+
+    return prompt_map[condition]
+
+
+def get_dean_prompt_file(
+    condition: str
+) -> str:
+
+    prompt_map = {
+        "soc_pure": "dean_pure.txt",
+        "soc_add": "dean_add.txt",
+    }
+
+    if condition not in prompt_map:
+        raise ValueError(
+            f"Unknown Dean condition: {condition}"
+        )
+
+    return prompt_map[condition]
+
+
+def run_socratic_module(
+    request: ChatRequest,
+    prompt_file: str,
+    previous_questions: list[str],
+    conversation_history: list[dict],
+    dean_feedback: str = "",
+    rejected_socratic_question: str = "",
+) -> dict:
+
+    instructions = load_prompt(
+        prompt_file
+    )
+
+    payload = {
+        "topic": request.topic,
+        "user_response": request.user_message,
+        "turn_number": request.turn_number,
+        "previous_socratic_questions": previous_questions,
+        "conversation_history": conversation_history,
+        "dean_feedback": dean_feedback,
+        "rejected_socratic_question": (
+            rejected_socratic_question
+        ),
+    }
+
+    return call_model_json(
+        instructions=instructions,
+        payload=payload,
+    )
+
+
+def run_dean_module(
+    request: ChatRequest,
+    dean_prompt_file: str,
+    previous_questions: list[str],
+    conversation_history: list[dict],
+    socratic_output: dict,
+) -> dict:
+
+    instructions = load_prompt(
+        dean_prompt_file
+    )
+
+    payload = {
+        "topic": request.topic,
+        "user_response": request.user_message,
+        "previous_socratic_questions": previous_questions,
+        "conversation_history": conversation_history,
+        "socratic_module_output": socratic_output,
+        "socratic_question": socratic_output.get(
+            "socratic_question",
+            "",
+        ),
+        "scaffolding_condition": request.condition,
+        "scaffolding_stage": socratic_output.get(
+            "scaffolding_stage",
+            "none",
+        ),
+    }
+
+    return call_model_json(
+        instructions=instructions,
+        payload=payload,
+    )
+
+
+def generate_socratic_reply(
+    request: ChatRequest
+) -> tuple[str, dict]:
+
+    socratic_prompt_file = (
+        get_socratic_prompt_file(
+            request.condition
+        )
+    )
+
+    dean_prompt_file = (
+        get_dean_prompt_file(
+            request.condition
+        )
+    )
+
+    previous_questions = (
+        get_previous_socratic_questions(
+            request
+        )
+    )
+
+    conversation_history = (
+        build_conversation_history(
+            request
+        )
+    )
+
+    # 1. Socratic Module 최초 생성
+    first_socratic = run_socratic_module(
+        request=request,
+        prompt_file=socratic_prompt_file,
+        previous_questions=previous_questions,
+        conversation_history=conversation_history,
+    )
+
+    first_question = first_socratic.get(
+        "socratic_question",
+        "",
+    )
+
+    if (
+        not isinstance(first_question, str)
+        or not first_question.strip()
+    ):
+        raise HTTPException(
+            status_code=502,
             detail=(
-                "The control response was missing "
-                "from the model output."
+                "The first Socratic question "
+                "was missing."
             ),
         )
 
-    return reply.strip()
+    # 2. Dean 검토
+    dean_output = run_dean_module(
+        request=request,
+        dean_prompt_file=dean_prompt_file,
+        previous_questions=previous_questions,
+        conversation_history=conversation_history,
+        socratic_output=first_socratic,
+    )
+
+    decision = str(
+        dean_output.get(
+            "decision",
+            "",
+        )
+    ).strip().lower()
+
+    # 3. Dean이 ok이면 최초 질문 사용
+    if decision == "ok":
+        final_socratic = first_socratic
+        was_revised = False
+
+    # 4. ok가 아니면 feedback을 반영해 한 번 수정
+    else:
+        dean_feedback = str(
+            dean_output.get(
+                "feedback",
+                "",
+            )
+        )
+
+        final_socratic = run_socratic_module(
+            request=request,
+            prompt_file=socratic_prompt_file,
+            previous_questions=previous_questions,
+            conversation_history=conversation_history,
+            dean_feedback=dean_feedback,
+            rejected_socratic_question=first_question,
+        )
+
+        was_revised = True
+
+    final_question = final_socratic.get(
+        "socratic_question",
+        "",
+    )
+
+    if (
+        not isinstance(final_question, str)
+        or not final_question.strip()
+    ):
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                "The final Socratic question "
+                "was missing."
+            ),
+        )
+
+    final_question = final_question.strip()
+
+    module_record = {
+        "turn_number": request.turn_number,
+        "condition": request.condition,
+        "socratic_prompt_file": (
+            socratic_prompt_file
+        ),
+        "dean_prompt_file": dean_prompt_file,
+        "previous_socratic_questions": (
+            previous_questions
+        ),
+        "first_socratic_output": first_socratic,
+        "dean_output": dean_output,
+        "was_revised": was_revised,
+        "final_socratic_output": final_socratic,
+        "final_reply": final_question,
+    }
+
+    return final_question, module_record
 
 
 # ---------------------------------
@@ -318,29 +572,35 @@ def chat(
     request: ChatRequest
 ) -> ChatResponse:
 
-    if request.condition == "control":
-        reply = generate_control_reply(
-            request
+    try:
+        if request.condition == "control":
+            reply, module_record = (
+                generate_control_reply(
+                    request
+                )
+            )
+
+        else:
+            reply, module_record = (
+                generate_socratic_reply(
+                    request
+                )
+            )
+
+    except FileNotFoundError as error:
+        print(
+            "Prompt file error:",
+            str(error),
         )
 
-    elif request.condition == "soc_pure":
-        # 다음 단계에서 soc_pure.txt와 Dean을 연결합니다.
-        reply = (
-            "고정 응답 테스트입니다. "
-            "그 입장이 어떤 가정에 기반하고 있는지 "
-            "생각해 보실 수 있을까요?"
-        )
-
-    else:
-        # 다음 단계에서 soc_add.txt와 Dean을 연결합니다.
-        reply = (
-            "고정 응답 테스트입니다. "
-            "다른 관점에서는 어떤 우려를 제기할 수 있다고 "
-            "생각하시나요?"
-        )
+        raise HTTPException(
+            status_code=500,
+            detail="A prompt file was not found.",
+        ) from error
 
     return ChatResponse(
         reply=reply,
         condition=request.condition,
         turn_number=request.turn_number,
+        module_record=module_record,
     )
