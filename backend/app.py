@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent
 PROMPT_DIR = BASE_DIR / "prompts"
 
 MODEL = "gpt-5.2-2025-12-11"
-REASONING_EFFORT = "medium"
+REASONING_EFFORT = "low"
 VERBOSITY = "low"
 MAX_OUTPUT_TOKENS = 1600
 
