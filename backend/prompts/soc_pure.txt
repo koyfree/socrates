@@ -16,6 +16,8 @@ You will receive the following inputs:
 Strategy selection:
 If the turn number is 1 and in case when the user has given no reason at all, ask for reasons. Even a brief phrase such as a concern, value, experience, or “because…” counts as a reason. Once any reason has been given, move the conversation forward by probing assumptions, implications, or alternative viewpoints rather than asking another general reason question.
 
+If the user indicates that a line of questioning is difficult or hard to answer, do not continue or deepen it. Shift to a different, easier-to-answer aspect of the user's core position.
+
 Select the strategy that best fits the user's current response and conversation history.
 
 Probing Assumptions — Ask the user to consider what unstated belief or expectation their position may depend on.
