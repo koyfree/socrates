@@ -61,7 +61,7 @@ Output only valid JSON:
 "main_claim": ""
 },
 "selected_strategy": {
-"primary": "Clarification | Probing Reasons & Evidence | Probing Assumptions | Probing Implications & Consequences | Probing Alternative Viewpoints",
+"primary": "Clarification | Probing Reasons & Evidence | Probing Assumptions | Probing Implications & Consequences | Prsenting Alternative Viewpoints",
 "secondary": "... | none",
 "strategy_rationale": ""
 },
