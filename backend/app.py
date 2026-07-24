@@ -20,7 +20,6 @@ PROMPT_DIR = BASE_DIR / "prompts"
 MODEL = "gpt-5.2-2025-12-11"
 REASONING_EFFORT = "medium"
 VERBOSITY = "low"
-TEMPERATURE = 0.2
 MAX_OUTPUT_TOKENS = 1600
 
 
@@ -183,7 +182,6 @@ def call_model_json(
             text={
                 "verbosity": VERBOSITY
             },
-            temperature=TEMPERATURE,
             max_output_tokens=MAX_OUTPUT_TOKENS,
         )
     except Exception as error:
