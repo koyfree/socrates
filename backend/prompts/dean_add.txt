@@ -25,6 +25,7 @@ Mark as Irrelevant if:
 - The question would feel disconnected from what the user just said.
 - Also reject the question if it misrepresents the user's position. A question misrepresents the user if it attributes a claim to the user that they did not make, or ignores qualifications, exceptions, or corrections the user already provided.
 - The question follows up on a side point or elaboration the user added to explain their main claim, rather than engaging with the user's core position on the main topic.
+- The question makes an alternative perspective itself the target of further probing, rather than using it to examine the user's core position.
 
 2. Repeated
 The question repeats a question that has already been asked, or asks the user to perform the same cognitive task again without moving the conversation forward.
