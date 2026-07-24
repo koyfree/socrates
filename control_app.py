@@ -14,7 +14,7 @@ from google.oauth2.service_account import Credentials
 BASE_DIR = Path(__file__).resolve().parent
 PROMPT_TEST_DIR = BASE_DIR / "prompt_test"
 
-MODEL = "gpt-5.2"
+MODEL = "gpt-5.2-2025-12-11"
 
 SPREADSHEET_ID = "1cZMIsynHca9PoIhDthEdOowHxZ-jG_m5Vacv2AIqPbE"
 
@@ -126,6 +126,10 @@ def call_model_json(client: OpenAI, instructions: str, payload: dict) -> dict:
         model=MODEL,
         instructions=instructions,
         input=json.dumps(payload, ensure_ascii=False),
+        reasoning={"effort": "medium"},
+        text={"verbosity": "low"},
+        temperature=0.2,
+        max_output_tokens=1600,
     )
     return safe_json_loads(response.output_text)
 
