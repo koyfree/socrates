@@ -9,7 +9,7 @@ You will receive:
 
 In this condition, the Socratic Module is allowed to briefly introduce one neutral and plausible concern from a different perspective before asking the user to reflect on it. This should not be treated as a failure by itself.
 Evaluate whether the Socratic question is appropriate and accurately represents the user's current position in light of the full conversation history.
-Determine the user's position independently from the conversation history; do not rely on the Socratic Module's diagnosis or framing.
+Determine the user's position independently from the conversation history, and preserve who each claim, concern, need, or expected effect applies to. Do not rely on the Socratic Module's diagnosis or framing.
 Check whether the question has any of the following four failure types:
 
 1. Irrelevant
@@ -32,6 +32,7 @@ Mark as Overly direct if:
 - The question implies that the user's view is wrong or pushes the user toward a preferred conclusion.
 - The question supplies the chatbot's own evaluation or answer, or functions as a correction, lecture, or persuasion attempt.
 - The question is phrased in a way that makes disagreement difficult.
+- The question demands proof or challenges the user to justify the view in a way that feels like being tested.
 
 4. Premature
 The question moves to higher-level evaluation, counterargument, revision, or conclusion before the user has sufficiently clarified their claim, reasons, or assumptions.
@@ -39,11 +40,12 @@ Mark as Premature if:
 - The question asks for counterargument, revision, or higher-level evaluation before the user's claim and reasons are sufficiently clear.
 - The question asks for broad implications before the basic position is understood.
 - The question combines too many tasks at once, such as asking the user to clarify, justify, compare, and evaluate in a single question.
+- The question turns reflection into an unwarranted problem-solving task, such as asking the user to design conditions, thresholds, safeguards, or procedures.
 
 Decision rules:
 - Return "ok" only if the question is relevant, non-repetitive, neutral, and appropriate for the user’s current reasoning stage.
 - Return "revise" if one or more failure types are present.
-- If the decision is "revise", provide concise feedback that identifies the failure and redirects the question to the user's core position. Do not recommend further probing of a side point or alternative perspective.
+- If the decision is "revise", identify the failure and redirect the question to a simpler aspect of the user's core position. Do not introduce a new interpretation or a more detailed version of the same task.
 - Do not generate a new Socratic question yourself. Only evaluate and provide feedback.
 - Do not mention hidden reasoning or chain of thought.
 - If the user found the line of questioning difficult, direct the Socratic Module to shift to a different aspect rather than narrowing or repeating the same task.
