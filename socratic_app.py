@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent
 PROMPT_DIR = BASE_DIR / "prompts"
 PROMPT_TEST_DIR = BASE_DIR / "prompt_test"
 
-MODEL = "gpt-5.2"
+MODEL = "gpt-5.2-2025-12-11"
 
 SPREADSHEET_ID = "1cZMIsynHca9PoIhDthEdOowHxZ-jG_m5Vacv2AIqPbE"
 
@@ -151,6 +151,10 @@ def call_model_json(client: OpenAI, instructions: str, payload: dict) -> dict:
         model=MODEL,
         instructions=instructions,
         input=json.dumps(payload, ensure_ascii=False),
+        reasoning={"effort": "medium"},
+        text={"verbosity": "low"},
+        temperature=0.2,
+        max_output_tokens=1600,
     )
     return safe_json_loads(response.output_text)
 
@@ -266,6 +270,10 @@ def generate_with_dean(
         previous_questions=previous_questions,
         conversation_history=conversation_history,
         dean_feedback=first_dean.get("feedback", ""),
+        rejected_socratic_question=first_socratic.get(
+            "socratic_question",
+            ""
+        ),
     )
 
     st.session_state.debug_trace["revised_socratic_question"] = revised_socratic.get("socratic_question", "")
