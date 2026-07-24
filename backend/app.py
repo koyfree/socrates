@@ -18,6 +18,10 @@ BASE_DIR = Path(__file__).resolve().parent
 PROMPT_DIR = BASE_DIR / "prompts"
 
 MODEL = "gpt-5.2-2025-12-11"
+REASONING_EFFORT = "medium"
+VERBOSITY = "low"
+TEMPERATURE = 0.2
+MAX_OUTPUT_TOKENS = 1600
 
 
 app = FastAPI(
@@ -173,9 +177,15 @@ def call_model_json(
                 payload,
                 ensure_ascii=False,
             ),
-            max_output_tokens=1600,
+            reasoning={
+                "effort": REASONING_EFFORT
+            },
+            text={
+                "verbosity": VERBOSITY
+            },
+            temperature=TEMPERATURE,
+            max_output_tokens=MAX_OUTPUT_TOKENS,
         )
-
     except Exception as error:
         print(
             "OpenAI API error:",
