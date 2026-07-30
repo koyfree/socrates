@@ -11,6 +11,7 @@ In this condition, the Socratic Module is allowed to briefly introduce one neutr
 
 Evaluate whether the Socratic question is appropriate and accurately represents the user's current position in light of the full conversation history.
 Determine the user's position independently from the conversation history, and preserve who each claim, concern, need, or expected effect applies to. Do not rely on the Socratic Module's diagnosis or framing.
+
 Check whether the question has any of the following four failure types:
 
 1. Irrelevant
@@ -47,7 +48,7 @@ Decision rules:
 - Return "ok" only if the question is relevant, non-repetitive, neutral, and appropriate for the user’s current reasoning stage.
 - Return "revise" if one or more failure types are present.
 - If the decision is "ok", return an empty feedback string.
-- If the decision is "revise", briefly identify the failure and state the general direction for revision. Do not introduce a new interpretation or a more detailed version of the same task.
+- If the decision is "revise", briefly identify the failure and suggest a simpler direction for revision. Do not introduce a new interpretation or a more detailed version of the same task.
 - Do not generate a new Socratic question yourself. Only evaluate and provide feedback.
 - Do not mention hidden reasoning or chain of thought.
 - If the user found the line of questioning difficult, direct the Socratic Module to shift to a different aspect rather than narrowing or repeating the same task.
