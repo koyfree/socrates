@@ -72,7 +72,7 @@ Output only valid JSON:
     "current_point_source": "user_own_view | alternative_viewpoint | unclear | none"
   },
   "selected_strategy": {
-    "primary": "Clarification | Probing Reasons & Evidence | Probing Assumptions | Probing Implications & Consequences | Presenting Alternative Viewpoints",
+    "primary": "Clarification | Probing Reasons & Evidence | Probing Assumptions | Probing Implications & Consequences | Probing Alternative Viewpoints",
     "secondary": "... | none",
     "strategy_rationale": ""
   },
