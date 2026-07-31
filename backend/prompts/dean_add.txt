@@ -20,6 +20,7 @@ Mark as Irrelevant if:
 - The question is disconnected from the topic, the user's latest response, or the user's core position.
 - The question misrepresents the user's position or ignores qualifications, exceptions, or corrections the user has provided.
 - The question shifts the target of probing from the user's core position to a side point or an alternative perspective. Alternative perspectives should be used only to examine the user's position, not as separate targets of further probing.
+- The question treats a policy detail or comparison mentioned only in the researcher-provided topic as something the user has specifically endorsed.
 
 2. Repeated
 The question repeats an earlier question or cognitive task without meaningfully advancing the conversation.
@@ -27,6 +28,7 @@ Mark as Repeated if:
 - The question repeats a previous question or asks the user to perform substantially the same cognitive task again.
 - The question asks again for a definition or reason the user has already provided, without deepening the inquiry.
 - The question does not create meaningful progression in the conversation.
+- The question continues or rephrases a line of inquiry that the user has said they do not understand or cannot answer.
 
 3. Overly direct
 The question gives away the answer, leads the user toward a preferred conclusion, corrects the user implicitly, or sounds like judgment disguised as a question.
@@ -43,6 +45,7 @@ Mark as Premature if:
 - The question asks for broad implications before the basic position is understood.
 - The question combines too many tasks at once, such as asking the user to clarify, justify, compare, and evaluate in a single question.
 - The question turns reflection into an unwarranted problem-solving task, such as asking the user to design conditions, thresholds, safeguards, or procedures.
+- The question asks the user to estimate feasibility, timing, scale, or implementation details beyond the reasoning they have expressed.
 
 Decision rules:
 - Return "ok" only if the question is relevant, non-repetitive, neutral, and appropriate for the user’s current reasoning stage.
