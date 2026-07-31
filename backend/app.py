@@ -388,7 +388,7 @@ def run_socratic_module(
         "previous_socratic_questions": previous_questions,
         "conversation_history": conversation_history,
         "dean_review": dean_review or {},
-}
+    }
     return call_model_json(
         instructions=instructions,
         payload=payload,
@@ -506,7 +506,7 @@ def generate_socratic_reply(
 
     # 4. ok가 아니면 feedback을 반영해 한 번 수정
     else:
-         dean_review = {
+        dean_review = {
             "decision": decision,
             "failure_types": dean_output.get(
                 "failure_types",
@@ -515,19 +515,19 @@ def generate_socratic_reply(
             "failure_reason": dean_output.get(
                 "failure_reason",
                 "",
-          ),
-        "rejected_question": first_question,
-    }
+            ),
+            "rejected_question": first_question,
+        }
 
-    final_socratic = run_socratic_module(
-        request=request,
-        prompt_file=socratic_prompt_file,
-        previous_questions=previous_questions,
-        conversation_history=conversation_history,
-        dean_review=dean_review,
-    )
+        final_socratic = run_socratic_module(
+            request=request,
+            prompt_file=socratic_prompt_file,
+            previous_questions=previous_questions,
+            conversation_history=conversation_history,
+            dean_review=dean_review,
+        )
 
-    was_revised = True
+        was_revised = True
     
     final_question = final_socratic.get(
         "socratic_question",
@@ -551,15 +551,12 @@ def generate_socratic_reply(
     module_record = {
         "turn_number": request.turn_number,
         "condition": request.condition,
-        "socratic_prompt_file": (
-            socratic_prompt_file
-        ),
-        "dean_prompt_file": dean_prompt_file,
         "previous_socratic_questions": (
             previous_questions
         ),
         "first_socratic_output": first_socratic,
         "dean_output": dean_output,
+        "dean_decision": decision,
         "was_revised": was_revised,
         "final_socratic_output": final_socratic,
         "final_reply": final_question,
