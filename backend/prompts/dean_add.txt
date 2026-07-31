@@ -52,20 +52,20 @@ Mark as Premature if:
 - The question asks for formal criteria, indicators, or thresholds beyond the user's expressed reasoning.
 
 Decision rules:
-- Return "ok" only if the question is relevant, non-repetitive, neutral, and appropriate for the user’s current reasoning stage.
-- Return "revise" if one or more failure types are present.
-- If the decision is "ok", return an empty feedback string.
-- If the decision is "revise", briefly identify the failure and suggest a simpler direction for revision. Do not introduce a new interpretation or a more detailed version of the same task.
-- Do not generate a new Socratic question yourself. Only evaluate and provide feedback.
-- Do not mention hidden reasoning or chain of thought.
-- If the user found the line of questioning difficult, direct the Socratic Module to shift to a different aspect rather than narrowing or repeating the same task.
+- Return "ok" and an empty failure_reason if the question can be shown as written.
+- Return "revise" if the question's target and line of inquiry are appropriate, but the question can be fixed by changing its wording, framing, or level of difficulty.
+- Return "regenerate" if the question's premise, target, cognitive task, or line of inquiry should be discarded rather than preserved.
+- If the decision is "revise" or "regenerate", briefly explain why the evaluated question fails.
+- Describe only the problem in the evaluated question, grounded in the conversation history.
+- Do not suggest what the Socratic Module should ask next, which topic it should move to, or how the question should be rewritten.
+- Do not provide replacement wording or use imperative instructions.
 - Output only valid JSON.
 
 Output format:
 
 {
   "Socratic question evaluated": "",
-  "decision": "ok | revise",
+  "decision": "ok | revise | regenerate",
   "failure_types": [],
-  "feedback": ""
+  "failure_reason": ""
 }
