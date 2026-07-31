@@ -374,8 +374,7 @@ def run_socratic_module(
     prompt_file: str,
     previous_questions: list[str],
     conversation_history: list[dict],
-    dean_feedback: str = "",
-    rejected_socratic_question: str = "",
+    dean_review: dict | None = None,
 ) -> dict:
 
     instructions = load_prompt(
@@ -388,12 +387,8 @@ def run_socratic_module(
         "turn_number": request.turn_number,
         "previous_socratic_questions": previous_questions,
         "conversation_history": conversation_history,
-        "dean_feedback": dean_feedback,
-        "rejected_socratic_question": (
-            rejected_socratic_question
-        ),
-    }
-
+        "dean_review": dean_review or {},
+}
     return call_model_json(
         instructions=instructions,
         payload=payload,
@@ -511,24 +506,29 @@ def generate_socratic_reply(
 
     # 4. ok가 아니면 feedback을 반영해 한 번 수정
     else:
-        dean_feedback = str(
-            dean_output.get(
-                "feedback",
+         dean_review = {
+            "decision": decision,
+            "failure_types": dean_output.get(
+                "failure_types",
+                [],
+            ),
+            "failure_reason": dean_output.get(
+                "failure_reason",
                 "",
-            )
-        )
+          ),
+        "rejected_question": first_question,
+    }
 
-        final_socratic = run_socratic_module(
-            request=request,
-            prompt_file=socratic_prompt_file,
-            previous_questions=previous_questions,
-            conversation_history=conversation_history,
-            dean_feedback=dean_feedback,
-            rejected_socratic_question=first_question,
-        )
+    final_socratic = run_socratic_module(
+        request=request,
+        prompt_file=socratic_prompt_file,
+        previous_questions=previous_questions,
+        conversation_history=conversation_history,
+        dean_review=dean_review,
+    )
 
-        was_revised = True
-
+    was_revised = True
+    
     final_question = final_socratic.get(
         "socratic_question",
         "",
