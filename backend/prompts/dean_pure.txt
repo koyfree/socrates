@@ -54,7 +54,7 @@ Mark as Premature if:
 - The question asks for formal criteria, indicators, or thresholds beyond the user's expressed reasoning.
 
 Decision rules:
-- Evaluate the question as part of the conversational sequence, not in isolation. 
+- Evaluate the question as part of the conversational sequence, not in isolation, including whether it continues or deepens a line of inquiry introduced by the assistant rather than the user.
 - Return "ok" and an empty failure_reason if the question can be shown as written.
 - Return "revise" if the question's target and line of inquiry are appropriate, but the question can be fixed by changing its wording, framing, or level of difficulty.
 - Return "regenerate" if the question's premise, target, cognitive task, or line of inquiry should be discarded rather than preserved.
