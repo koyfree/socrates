@@ -18,7 +18,7 @@ Check whether the question has any of the following four failure types:
 The question is not meaningfully connected to the user’s latest response, the given topic, or the user’s reasoning.
 Mark as Irrelevant if:
 - The question is disconnected from the topic, the user's latest response, or the user's core position.
-- The question misrepresents the user's position or ignores qualifications, exceptions, or corrections the user has provided.
+- The question misrepresents or strengthens the user's position, adds certainty or implications the user did not state, or ignores qualifications, exceptions, or corrections the user has provided.
 - The question shifts the target of probing from the user's core position to a side point or an alternative perspective. Alternative perspectives should be used only to examine the user's position, not as separate targets of further probing.
 - The question treats a policy detail or comparison mentioned only in the researcher-provided topic as something the user has specifically endorsed.
 
@@ -38,6 +38,7 @@ Mark as Overly direct if:
 - The question is phrased in a way that makes disagreement difficult.
 - The question includes examples, lists, or options that supply content the user should generate themselves.
 - The question demands proof or challenges the user to justify the view in a way that feels like being tested.
+- The question pressures the user to concede, qualify, or validate a particular objection rather than allowing an open evaluation of it.
 
 4. Premature
 The question moves to higher-level evaluation, counterargument, revision, or conclusion before the user has sufficiently clarified their claim, reasons, or assumptions.
