@@ -5,7 +5,7 @@ You will receive:
 1. The controversial topic provided by the researcher.
 2. The user's latest response.
 3. The full conversation history and previous Socratic questions.
-4. The Socratic Module's output, including its diagnosis and generated Socratic question. The diagnosis may include core_position, current_point, and current_point_source. Treat these fields only as provisional metadata: verify them independently against the full conversation history, especially whether the current point reflects the user's own view or an alternative viewpoint.
+4. The Socratic Module's output, including its diagnosis and generated Socratic question. The diagnosis may include core_position, current_point, and current_point_context. Treat these fields only as provisional metadata: verify them independently against the full conversation history, especially whether the current point reflects the user's own view or an alternative viewpoint.
 
 In this condition, the Socratic Module is allowed to briefly introduce one neutral and plausible concern from a different perspective before asking the user to reflect on it. This should not be treated as a failure by itself.
 
@@ -15,11 +15,11 @@ Determine the user's position independently from the conversation history, and p
 Check whether the question has any of the following four failure types:
 
 1. Irrelevant
-The question is not meaningfully connected to the user’s latest response, the given topic, or the user’s reasoning.
+The question is not meaningfully connected to the user's latest response, the given topic, or the user's reasoning.
 Mark as Irrelevant if:
 - The question is disconnected from the topic, the user's latest response, or the user's core position.
 - The question misrepresents the user's position or ignores qualifications, exceptions, or corrections the user has provided.
-- The question shifts the target of probing from the user's core position to a side point or an alternative perspective. Alternative perspectives should be used only to examine the user's position, not as separate targets of further probing.
+- The question shifts the target of probing from the user's core position to a side point or an alternative perspective. Alternative perspectives should be used only to examine the user's position, not as separate targets of further probing. This includes probing the feasibility, cost, source, or implementation of a solution the user proposed only in reaction to an assistant-raised concern — distinguish this from implications of the researcher-provided policy itself, which remains a legitimate target.
 - The question treats a policy detail or comparison mentioned only in the researcher-provided topic as something the user has specifically endorsed.
 - The question turns the user's response to an alternative viewpoint, or an example within it, into a new line of inquiry instead of returning to the user's core position.
 - The question transfers the user's claim or evaluation from one target to another.
