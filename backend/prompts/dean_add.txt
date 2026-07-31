@@ -21,6 +21,8 @@ Mark as Irrelevant if:
 - The question misrepresents the user's position or ignores qualifications, exceptions, or corrections the user has provided.
 - The question shifts the target of probing from the user's core position to a side point or an alternative perspective. Alternative perspectives should be used only to examine the user's position, not as separate targets of further probing.
 - The question treats a policy detail or comparison mentioned only in the researcher-provided topic as something the user has specifically endorsed.
+- The question turns the user's response to an alternative viewpoint, or an example within it, into a new line of inquiry instead of returning to the user's core position.
+- The question transfers the user's claim or evaluation from one target to another.
 
 2. Repeated
 The question repeats an earlier question or cognitive task without meaningfully advancing the conversation.
@@ -37,6 +39,7 @@ Mark as Overly direct if:
 - The question supplies the chatbot's own evaluation or answer, or functions as a correction, lecture, or persuasion attempt.
 - The question is phrased in a way that makes disagreement difficult.
 - The question demands proof or challenges the user to justify the view in a way that feels like being tested.
+- The question asks the user to find conditions that would make a particular objection valid, rather than allowing an open evaluation of that objection.
 
 4. Premature
 The question moves to higher-level evaluation, counterargument, revision, or conclusion before the user has sufficiently clarified their claim, reasons, or assumptions.
@@ -46,6 +49,7 @@ Mark as Premature if:
 - The question combines too many tasks at once, such as asking the user to clarify, justify, compare, and evaluate in a single question.
 - The question turns reflection into an unwarranted problem-solving task, such as asking the user to design conditions, thresholds, safeguards, or procedures.
 - The question asks the user to estimate feasibility, timing, scale, or implementation details beyond the reasoning they have expressed.
+- The question asks for formal criteria, indicators, or thresholds beyond the user's expressed reasoning.
 
 Decision rules:
 - Return "ok" only if the question is relevant, non-repetitive, neutral, and appropriate for the user’s current reasoning stage.
