@@ -21,7 +21,11 @@ MODEL = "gpt-5.2-2025-12-11"
 REASONING_EFFORT = "low"
 VERBOSITY = "low"
 MAX_OUTPUT_TOKENS = 1600
-#---------------여기
+
+# 테스트용:
+# True이면 Dean 1과 Dean 2를 강제로 reject 처리해서
+# fallback 경로가 정상 작동하는지 확인합니다.
+# 실제 실험 전에는 반드시 False로 바꾸세요.
 FORCE_FALLBACK_TEST = True
 
 
@@ -186,6 +190,7 @@ def call_model_json(
             },
             max_output_tokens=MAX_OUTPUT_TOKENS,
         )
+
     except Exception as error:
         print(
             "OpenAI API error:",
@@ -231,7 +236,6 @@ def build_conversation_history(
     request: ChatRequest
 ) -> list[dict]:
     """
-    기존 Streamlit 코드와 마찬가지로
     현재 사용자 발화까지 포함한 전체 대화 기록을 만듭니다.
     """
 
@@ -308,7 +312,10 @@ def generate_control_reply(
         ""
     )
 
-    if not isinstance(reply, str) or not reply.strip():
+    if (
+        not isinstance(reply, str)
+        or not reply.strip()
+    ):
         print(
             "Invalid control output:",
             json.dumps(
@@ -322,20 +329,17 @@ def generate_control_reply(
             detail="The control response was missing.",
         )
 
-    #여기------------
-    if FORCE_FALLBACK_TEST and fallback_used:
-        final_question = "[FALLBACK TEST] " + final_question
+    reply = reply.strip()
 
-    
     module_record = {
         "turn_number": request.turn_number,
         "condition": request.condition,
         "prompt_file": "control.txt",
         "control_output": control_output,
-        "final_reply": reply.strip(),
+        "final_reply": reply,
     }
 
-    return reply.strip(), module_record
+    return reply, module_record
 
 
 # ---------------------------------
@@ -522,13 +526,12 @@ def generate_socratic_reply(
         )
     ).strip().lower()
 
-    # ------------ 여기
+    # 테스트 중에는 첫 번째 Dean을 강제로 reject 처리
     if FORCE_FALLBACK_TEST:
         first_dean_decision = "regenerate"
 
-    
     # ---------------------------------
-    # 3. Dean 1이 ok이면 바로 사용
+    # 3. Dean 1이 ok이면 최초 질문 사용
     # ---------------------------------
 
     if first_dean_decision == "ok":
@@ -610,13 +613,10 @@ def generate_socratic_reply(
             )
         ).strip().lower()
 
-        #------------여기
+        # 테스트 중에는 두 번째 Dean도 강제로 reject 처리
         if FORCE_FALLBACK_TEST:
-            first_dean_decision = "regenerate"
+            second_dean_decision = "regenerate"
 
-
-
-        
         # ---------------------------------
         # 6. Dean 2가 ok이면
         #    두 번째 질문 사용
@@ -675,6 +675,16 @@ def generate_socratic_reply(
             )
 
             fallback_used = True
+
+    # ---------------------------------
+    # 테스트용 표시
+    # ---------------------------------
+
+    if FORCE_FALLBACK_TEST and fallback_used:
+        final_question = (
+            "[FALLBACK TEST] "
+            + final_question
+        )
 
     # ---------------------------------
     # 8. 최종 로그 저장
