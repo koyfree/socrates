@@ -26,7 +26,7 @@ MAX_OUTPUT_TOKENS = 1600
 # True이면 Dean 1과 Dean 2를 강제로 reject 처리해서
 # fallback 경로가 정상 작동하는지 확인합니다.
 # 실제 실험 전에는 반드시 False로 바꾸세요.
-FORCE_FALLBACK_TEST = True
+FORCE_FALLBACK_TEST = False
 
 
 app = FastAPI(
