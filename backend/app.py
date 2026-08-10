@@ -375,6 +375,8 @@ def run_socratic_module(
     previous_questions: list[str],
     conversation_history: list[dict],
     dean_review: dict | None = None,
+    generation_mode: str = "normal",
+    rejected_socratic_questions: list[str] | None = None,
 ) -> dict:
 
     instructions = load_prompt(
@@ -388,7 +390,12 @@ def run_socratic_module(
         "previous_socratic_questions": previous_questions,
         "conversation_history": conversation_history,
         "dean_review": dean_review or {},
+        "generation_mode": generation_mode,
+        "rejected_socratic_questions": (
+            rejected_socratic_questions or []
+        ),
     }
+
     return call_model_json(
         instructions=instructions,
         payload=payload,
@@ -458,12 +465,16 @@ def generate_socratic_reply(
         )
     )
 
+    # ---------------------------------
     # 1. Socratic Module 최초 생성
+    # ---------------------------------
+
     first_socratic = run_socratic_module(
         request=request,
         prompt_file=socratic_prompt_file,
         previous_questions=previous_questions,
         conversation_history=conversation_history,
+        generation_mode="normal",
     )
 
     first_question = first_socratic.get(
@@ -483,8 +494,13 @@ def generate_socratic_reply(
             ),
         )
 
-    # 2. Dean 검토
-    dean_output = run_dean_module(
+    first_question = first_question.strip()
+
+    # ---------------------------------
+    # 2. 첫 번째 Dean 검토
+    # ---------------------------------
+
+    first_dean_output = run_dean_module(
         request=request,
         dean_prompt_file=dean_prompt_file,
         previous_questions=previous_questions,
@@ -492,61 +508,158 @@ def generate_socratic_reply(
         socratic_output=first_socratic,
     )
 
-    decision = str(
-        dean_output.get(
+    first_dean_decision = str(
+        first_dean_output.get(
             "decision",
             "",
         )
     ).strip().lower()
 
-    # 3. Dean이 ok이면 최초 질문 사용
-    if decision == "ok":
-        final_socratic = first_socratic
-        was_revised = False
+    # ---------------------------------
+    # 3. Dean 1이 ok이면 바로 사용
+    # ---------------------------------
 
-    # 4. ok가 아니면 feedback을 반영해 한 번 수정
+    if first_dean_decision == "ok":
+
+        final_socratic = first_socratic
+        final_question = first_question
+
+        second_socratic = None
+        second_dean_output = None
+        second_dean_decision = None
+
+        fallback_used = False
+        fallback_socratic = None
+
+    # ---------------------------------
+    # 4. Dean 1이 reject하면
+    #    Socratic Module 두 번째 생성
+    # ---------------------------------
+
     else:
-        dean_review = {
-            "decision": decision,
-            "failure_types": dean_output.get(
+
+        first_dean_review = {
+            "decision": first_dean_decision,
+            "failure_types": first_dean_output.get(
                 "failure_types",
                 [],
             ),
-            "failure_reason": dean_output.get(
+            "failure_reason": first_dean_output.get(
                 "failure_reason",
                 "",
             ),
             "rejected_question": first_question,
         }
 
-        final_socratic = run_socratic_module(
+        second_socratic = run_socratic_module(
             request=request,
             prompt_file=socratic_prompt_file,
             previous_questions=previous_questions,
             conversation_history=conversation_history,
-            dean_review=dean_review,
+            dean_review=first_dean_review,
+            generation_mode="normal",
         )
 
-        was_revised = True
-    
-    final_question = final_socratic.get(
-        "socratic_question",
-        "",
-    )
-
-    if (
-        not isinstance(final_question, str)
-        or not final_question.strip()
-    ):
-        raise HTTPException(
-            status_code=502,
-            detail=(
-                "The final Socratic question "
-                "was missing."
-            ),
+        second_question = second_socratic.get(
+            "socratic_question",
+            "",
         )
 
-    final_question = final_question.strip()
+        if (
+            not isinstance(second_question, str)
+            or not second_question.strip()
+        ):
+            raise HTTPException(
+                status_code=502,
+                detail=(
+                    "The second Socratic question "
+                    "was missing."
+                ),
+            )
+
+        second_question = second_question.strip()
+
+        # ---------------------------------
+        # 5. 두 번째 Dean 검토
+        # ---------------------------------
+
+        second_dean_output = run_dean_module(
+            request=request,
+            dean_prompt_file=dean_prompt_file,
+            previous_questions=previous_questions,
+            conversation_history=conversation_history,
+            socratic_output=second_socratic,
+        )
+
+        second_dean_decision = str(
+            second_dean_output.get(
+                "decision",
+                "",
+            )
+        ).strip().lower()
+
+        # ---------------------------------
+        # 6. Dean 2가 ok이면
+        #    두 번째 질문 사용
+        # ---------------------------------
+
+        if second_dean_decision == "ok":
+
+            final_socratic = second_socratic
+            final_question = second_question
+
+            fallback_used = False
+            fallback_socratic = None
+
+        # ---------------------------------
+        # 7. Dean 2도 reject하면
+        #    Socratic fallback 생성
+        # ---------------------------------
+
+        else:
+
+            fallback_socratic = run_socratic_module(
+                request=request,
+                prompt_file=socratic_prompt_file,
+                previous_questions=previous_questions,
+                conversation_history=conversation_history,
+                dean_review={},
+                generation_mode="fallback",
+                rejected_socratic_questions=[
+                    first_question,
+                    second_question,
+                ],
+            )
+
+            fallback_question = (
+                fallback_socratic.get(
+                    "socratic_question",
+                    "",
+                )
+            )
+
+            if (
+                not isinstance(fallback_question, str)
+                or not fallback_question.strip()
+            ):
+                raise HTTPException(
+                    status_code=502,
+                    detail=(
+                        "The fallback Socratic "
+                        "question was missing."
+                    ),
+                )
+
+            final_socratic = fallback_socratic
+            final_question = (
+                fallback_question.strip()
+            )
+
+            fallback_used = True
+
+    # ---------------------------------
+    # 8. 최종 로그 저장
+    # ---------------------------------
 
     module_record = {
         "turn_number": request.turn_number,
@@ -554,12 +667,51 @@ def generate_socratic_reply(
         "previous_socratic_questions": (
             previous_questions
         ),
-        "first_socratic_output": first_socratic,
-        "dean_output": dean_output,
-        "dean_decision": decision,
-        "was_revised": was_revised,
-        "final_socratic_output": final_socratic,
-        "final_reply": final_question,
+
+        "first_socratic_output": (
+            first_socratic
+        ),
+        "first_dean_output": (
+            first_dean_output
+        ),
+        "first_dean_decision": (
+            first_dean_decision
+        ),
+
+        "second_socratic_output": (
+            second_socratic
+        ),
+        "second_dean_output": (
+            second_dean_output
+        ),
+        "second_dean_decision": (
+            second_dean_decision
+        ),
+
+        "fallback_used": (
+            fallback_used
+        ),
+        "fallback_socratic_output": (
+            fallback_socratic
+        ),
+
+        "final_socratic_output": (
+            final_socratic
+        ),
+        "final_reply": (
+            final_question
+        ),
+
+        # 기존 로그 필드와의 호환성을 위해 유지
+        "dean_output": (
+            first_dean_output
+        ),
+        "dean_decision": (
+            first_dean_decision
+        ),
+        "was_revised": (
+            first_dean_decision != "ok"
+        ),
     }
 
     return final_question, module_record
