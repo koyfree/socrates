@@ -21,6 +21,8 @@ MODEL = "gpt-5.2-2025-12-11"
 REASONING_EFFORT = "low"
 VERBOSITY = "low"
 MAX_OUTPUT_TOKENS = 1600
+#---------------여기
+FORCE_FALLBACK_TEST = True 
 
 
 app = FastAPI(
@@ -515,6 +517,11 @@ def generate_socratic_reply(
         )
     ).strip().lower()
 
+    # ------------ 여기
+    if FORCE_FALLBACK_TEST:
+        first_dean_decision = "regenerate"
+
+    
     # ---------------------------------
     # 3. Dean 1이 ok이면 바로 사용
     # ---------------------------------
@@ -598,6 +605,13 @@ def generate_socratic_reply(
             )
         ).strip().lower()
 
+        #------------여기
+        if FORCE_FALLBACK_TEST:
+            first_dean_decision = "regenerate"
+
+
+
+        
         # ---------------------------------
         # 6. Dean 2가 ok이면
         #    두 번째 질문 사용
