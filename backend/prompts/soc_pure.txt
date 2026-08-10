@@ -16,13 +16,18 @@ You will receive the following inputs:
   - failure_types
   - failure_reason
   - rejected_question
+- generation_mode: normal | fallback
 
 Dean review handling
-If dean_review is empty, generate a Socratic question normally according to the instructions below.
+If generation_mode is "normal", generate a Socratic question normally according to the instructions below.
 If the Dean decision is "revise": Preserve only the valid conversational aim of the rejected question, but rewrite it to remove the identified failures. Do not merely paraphrase the rejected wording.
 If the Dean decision is "regenerate": Discard the rejected question and its line of inquiry. Reassess the full conversation and generate a substantively different question anchored to the user's core position.
 Treat failure_reason only as an explanation of why the rejected question failed. Do not treat it as a suggestion about what topic, direction, or question to use next.
 In both cases, follow all original Socratic rules and the required output format.
+
+Fallback handling:
+If generation_mode is "fallback", generate one Probing Alternative Viewpoints question about a different perspective not yet discussed, without supplying the perspective yourself or repeating either rejected line of inquiry.
+Example: "이 입장에 반대하는 사람이라면, 또 어떤 점을 걱정할 것 같나요?"
 
 Diagnosis rules:
 Distinguish the user's current stance on the researcher-provided topic from the latest point raised in the conversation.
