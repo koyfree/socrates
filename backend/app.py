@@ -322,6 +322,11 @@ def generate_control_reply(
             detail="The control response was missing.",
         )
 
+    #여기------------
+    if FORCE_FALLBACK_TEST and fallback_used:
+        final_question = "[FALLBACK TEST] " + final_question
+
+    
     module_record = {
         "turn_number": request.turn_number,
         "condition": request.condition,
