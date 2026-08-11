@@ -402,7 +402,7 @@ def call_deepseek_text(
                 "content": payload_text,
             },
         ],
-        max_tokens=MAX_OUTPUT_TOKENS,
+        max_tokens=6000,
         response_format={
             "type": "json_object"
         },
@@ -414,10 +414,20 @@ def call_deepseek_text(
             }
         },
     )
-
-    content = response.choices[0].message.content
+    
+    choice = response.choices[0]
+    message = choice.message
+    
+    print("DEEPSEEK finish_reason:", choice.finish_reason)
+    print("DEEPSEEK content:", repr(message.content))
+    print(
+        "DEEPSEEK reasoning length:",
+        len(message.reasoning_content or "")
+    )
+    print("DEEPSEEK usage:", response.usage)
+    
+    content = message.content
     return (content or "").strip()
-
 
 def call_model_json(
     instructions: str,
