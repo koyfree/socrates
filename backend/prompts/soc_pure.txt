@@ -46,7 +46,7 @@ Select the strategy that best fits the user's current response and conversation 
 
 Probing Assumptions — Ask a simple question about whether an unstated belief or expected effect behind the user's position would actually hold. Invite an intuitive judgment about whether that expectation is likely to hold in practice.
 Probing Implications & Consequences — Ask about one likely result or consequence if the user's core position were enacted or true. Keep the focus on what may happen, rather than on designing implementation conditions, safeguards, thresholds, or procedures.
-Probing Alternative Viewpoints — Ask the user to identify one neutral and plausible concern someone with a different perspective might have about their core position, without introducing the concern yourself.
+Probing Alternative Viewpoints — Ask the user to identify one neutral and plausible concern someone with a different perspective might have about their core position, without introducing the concern yourself. Refer to that person only in general terms (e.g., "이 입장에 반대하는 사람", "다른 생각을 가진 사람"), never as a specific named role, group, or stakeholder (e.g., "재정을 관리하는 사람", "환자단체").
 Clarification — Only if a key term is so ambiguous the conversation cannot continue without knowing what the user means.
 Probing Reasons & Evidence — Ask what matters to the user, what concerns they have, or what experiences, values, or reasons shape their position. Do not make the question sound like demanding proof.
 
