@@ -407,10 +407,10 @@ def call_deepseek_text(
             "type": "json_object"
         },
         stream=False,
-        reasoning_effort=REASONING_EFFORT,
+        reasoning_effort=high,
         extra_body={
             "thinking": {
-                "type": "disabled"
+                "type": "enabled"
             }
         },
     )
