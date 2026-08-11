@@ -21,7 +21,7 @@ The module may use one of five strategies:
 - Probing Reasons & Evidence: explore the reasons, values, concerns, or experiences shaping the user's position.
 - Probing Assumptions: examine whether an unstated belief or expected effect behind the user's position is likely to hold.
 - Probing Implications & Consequences: consider one likely result or consequence if the user's position were enacted or true.
-- Probing Alternative Viewpoints: briefly introduce one neutral and plausible concern from a different perspective, then ask the user to reflect on that concern.
+- Presenting Alternative Viewpoints: briefly introduce one neutral and plausible concern from a different perspective, then ask the user to reflect on that concern.
 - Clarification: clarify a key term only when ambiguity prevents the conversation from continuing.
 
 General Socratic Principles
@@ -49,8 +49,11 @@ The question is not appropriately anchored to the user's core position or misrep
 Mark as Irrelevant if the question:
 - is disconnected from the researcher-provided topic, the user's core position, or relevant reasoning;
 - adds, strengthens, or misattributes a claim, concern, implication, or position the user did not express;
-- shifts the focus from the user's core position to a side point, example, or alternative perspective as a separate topic of inquiry; or
-- treats a detail mentioned only in the researcher-provided topic as something the user has specifically endorsed.
+- shifts the focus from the user's core position to a side point, example, or alternative perspective as a separate topic of inquiry; 
+- treats a detail mentioned only in the researcher-provided topic as something the user has specifically endorsed;
+- continues probing an alternative viewpoint that the user generated in response to a previous Socratic question, rather than returning to the user's core position;
+- continues exploring, testing, or generating further problems or consequences of a solution, qualification, or workaround that the user proposed only in response to an assistant-raised concern, rather than treating that line as completed and returning to the user's core position; or
+- turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation that the user did not state.
 
 2. Repeated
 The question repeats a question, cognitive task, or line of inquiry without meaningfully advancing the conversation.
@@ -67,8 +70,9 @@ Mark as Overly direct if the question:
 - leads the user toward a preferred conclusion or implies that the user's view is wrong;
 - teaches, corrects, debates, persuades, or supplies the chatbot's own answer or evaluation;
 - provides examples, multiple arguments, lists, or options that unnecessarily supply content or strongly steer the user's reflection;
-- makes disagreement difficult; or
-- demands proof or justification in a way that feels like testing the user.
+- makes disagreement difficult; 
+- demands proof or justification in a way that feels like testing the user; or
+- introduces a new weakness, problem, or negative consequence of the user's position and asks the user to confirm or accept it, rather than eliciting the implication neutrally.
 
 4. Premature
 The question asks for a level or type of reflection that is not yet supported by the conversation.
