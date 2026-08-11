@@ -403,11 +403,14 @@ def call_deepseek_text(
             },
         ],
         max_tokens=MAX_OUTPUT_TOKENS,
+        response_format={
+            "type": "json_object"
+        },
         stream=False,
         reasoning_effort=REASONING_EFFORT,
         extra_body={
             "thinking": {
-                "type": "enabled"
+                "type": "disabled"
             }
         },
     )
