@@ -49,8 +49,10 @@ Mark as Irrelevant if the question:
 - is disconnected from the researcher-provided topic, the user's core position, or relevant reasoning;
 - adds, strengthens, or misattributes a claim, concern, implication, or position the user did not express;
 - continues probing an alternative viewpoint that the user generated in response to a previous Socratic question, rather than returning to the user's core position;
-- shifts the focus from the user's core position to a side point, example, or alternative perspective as a separate topic of inquiry; or
-- treats a detail mentioned only in the researcher-provided topic as something the user has specifically endorsed.
+- shifts the focus from the user's core position to a side point, example, or alternative perspective as a separate topic of inquiry;
+- treats a detail mentioned only in the researcher-provided topic as something the user has specifically endorsed;
+- continues probing an alternative viewpoint that the user generated in response to a previous Socratic question, rather than returning to the user's core position; or 
+- continues probing the feasibility, cost, source, or implementation of a solution or qualification the user proposed only in reaction to an assistant-raised concern.
 
 2. Repeated
 The question repeats a question, cognitive task, or line of inquiry without meaningfully advancing the conversation.
