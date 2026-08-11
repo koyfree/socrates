@@ -17,10 +17,49 @@ from pydantic import BaseModel, Field
 BASE_DIR = Path(__file__).resolve().parent
 PROMPT_DIR = BASE_DIR / "prompts"
 
-MODEL = "gpt-5.2-2025-12-11"
 REASONING_EFFORT = "low"
 VERBOSITY = "low"
 MAX_OUTPUT_TOKENS = 1600
+
+# ---------------------------------
+# 사전테스트용 모델 설정
+# ---------------------------------
+#
+# model_key는 프론트에서 gpt / claude / gemini / deepseek 중 하나를 보냅니다.
+# 실제 API model id는 여기 한 곳에서 관리합니다.
+# 사전테스트 전에 각 provider에서 사용할 정확한 model id를 최종 확정하세요.
+# 환경변수로 model id를 덮어쓸 수도 있습니다.
+
+MODEL_CONFIGS = {
+    "gpt": {
+        "provider": "openai",
+        "model_id": os.getenv(
+            "OPENAI_MODEL",
+            "gpt-5.2-2025-12-11",
+        ),
+    },
+    "claude": {
+        "provider": "anthropic",
+        "model_id": os.getenv(
+            "ANTHROPIC_MODEL",
+            "claude-sonnet-5",
+        ),
+    },
+    "gemini": {
+        "provider": "google",
+        "model_id": os.getenv(
+            "GEMINI_MODEL",
+            "gemini-3.1-pro-preview",
+        ),
+    },
+    "deepseek": {
+        "provider": "deepseek",
+        "model_id": os.getenv(
+            "DEEPSEEK_MODEL",
+            "deepseek-v4-pro",
+        ),
+    },
+}
 
 # 테스트용:
 # True이면 Dean 1과 Dean 2를 강제로 reject 처리해서
@@ -31,7 +70,7 @@ FORCE_FALLBACK_TEST = False
 
 app = FastAPI(
     title="Socrates Chatbot API",
-    version="0.4.0",
+    version="0.5.0",
 )
 
 
@@ -48,6 +87,14 @@ app.add_middleware(
 # 요청·응답 형식
 # ---------------------------------
 
+ModelKey = Literal[
+    "gpt",
+    "claude",
+    "gemini",
+    "deepseek",
+]
+
+
 class ConversationMessage(BaseModel):
     role: Literal["user", "assistant"]
     content: str = Field(min_length=1)
@@ -61,6 +108,10 @@ class ChatRequest(BaseModel):
         "soc_pure",
         "soc_add",
     ]
+
+    # 기존 프론트와의 호환성을 위해 기본값은 gpt입니다.
+    # 모델 선택 UI가 model_key를 보내면 해당 모델로 전체 파이프라인이 실행됩니다.
+    model_key: ModelKey = "gpt"
 
     topic: str = Field(min_length=1)
 
@@ -81,6 +132,11 @@ class ChatResponse(BaseModel):
     condition: str
     turn_number: int
 
+    # 어떤 모델이 실제로 호출되었는지 프론트에서도 확인 가능
+    model_key: str
+    model_provider: str
+    model_id: str
+
     # Qualtrics의 __js_module_log에 저장할 내부 기록
     module_record: dict = Field(
         default_factory=dict
@@ -99,14 +155,15 @@ def root() -> dict[str, str]:
 
 
 @app.get("/health")
-def health_check() -> dict[str, str]:
+def health_check() -> dict:
     return {
-        "status": "ok"
+        "status": "ok",
+        "available_model_keys": list(MODEL_CONFIGS.keys()),
     }
 
 
 # ---------------------------------
-# 공통 함수
+# 공통 함수: prompt / model config
 # ---------------------------------
 
 @lru_cache(maxsize=10)
@@ -123,6 +180,22 @@ def load_prompt(filename: str) -> str:
     ).strip()
 
 
+def get_model_config(model_key: str) -> dict[str, str]:
+    config = MODEL_CONFIGS.get(model_key)
+
+    if config is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown model_key: {model_key}",
+        )
+
+    return config
+
+
+# ---------------------------------
+# 공통 함수: provider client
+# ---------------------------------
+
 @lru_cache(maxsize=1)
 def get_openai_client() -> OpenAI:
     api_key = os.getenv("OPENAI_API_KEY")
@@ -134,6 +207,65 @@ def get_openai_client() -> OpenAI:
 
     return OpenAI(api_key=api_key)
 
+
+@lru_cache(maxsize=1)
+def get_anthropic_client():
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+
+    if not api_key:
+        raise RuntimeError(
+            "ANTHROPIC_API_KEY is not configured."
+        )
+
+    try:
+        from anthropic import Anthropic
+    except ImportError as error:
+        raise RuntimeError(
+            "The anthropic package is not installed. "
+            "Run: pip install -U anthropic"
+        ) from error
+
+    return Anthropic(api_key=api_key)
+
+
+@lru_cache(maxsize=1)
+def get_gemini_client():
+    api_key = os.getenv("GEMINI_API_KEY")
+
+    if not api_key:
+        raise RuntimeError(
+            "GEMINI_API_KEY is not configured."
+        )
+
+    try:
+        from google import genai
+    except ImportError as error:
+        raise RuntimeError(
+            "The google-genai package is not installed. "
+            "Run: pip install -U google-genai"
+        ) from error
+
+    return genai.Client(api_key=api_key)
+
+
+@lru_cache(maxsize=1)
+def get_deepseek_client() -> OpenAI:
+    api_key = os.getenv("DEEPSEEK_API_KEY")
+
+    if not api_key:
+        raise RuntimeError(
+            "DEEPSEEK_API_KEY is not configured."
+        )
+
+    return OpenAI(
+        api_key=api_key,
+        base_url="https://api.deepseek.com",
+    )
+
+
+# ---------------------------------
+# 공통 함수: JSON parsing
+# ---------------------------------
 
 def safe_json_loads(text: str) -> dict:
     cleaned = text.strip()
@@ -168,47 +300,195 @@ def safe_json_loads(text: str) -> dict:
     return parsed
 
 
+# ---------------------------------
+# provider별 실제 API 호출
+# ---------------------------------
+
+def call_openai_text(
+    instructions: str,
+    payload_text: str,
+    model_id: str,
+) -> str:
+    client = get_openai_client()
+
+    response = client.responses.create(
+        model=model_id,
+        instructions=instructions,
+        input=payload_text,
+        reasoning={
+            "effort": REASONING_EFFORT
+        },
+        text={
+            "verbosity": VERBOSITY
+        },
+        max_output_tokens=MAX_OUTPUT_TOKENS,
+    )
+
+    return response.output_text.strip()
+
+
+def call_anthropic_text(
+    instructions: str,
+    payload_text: str,
+    model_id: str,
+) -> str:
+    client = get_anthropic_client()
+
+    response = client.messages.create(
+        model=model_id,
+        system=instructions,
+        messages=[
+            {
+                "role": "user",
+                "content": payload_text,
+            }
+        ],
+        max_tokens=MAX_OUTPUT_TOKENS,
+        thinking={
+            "type": "adaptive"
+        },
+        output_config={
+            "effort": REASONING_EFFORT
+        },
+    )
+
+    text_parts = []
+
+    for block in response.content:
+        if getattr(block, "type", None) == "text":
+            text = getattr(block, "text", "")
+            if text:
+                text_parts.append(text)
+
+    return "\n".join(text_parts).strip()
+
+
+def call_gemini_text(
+    instructions: str,
+    payload_text: str,
+    model_id: str,
+) -> str:
+    client = get_gemini_client()
+
+    # Google은 2026년 기준 새 개발에 Interactions API 사용을 권장합니다.
+    interaction = client.interactions.create(
+        model=model_id,
+        system_instruction=instructions,
+        input=payload_text,
+        generation_config={
+            "thinking_level": REASONING_EFFORT,
+        },
+    )
+
+    return (interaction.output_text or "").strip()
+
+
+def call_deepseek_text(
+    instructions: str,
+    payload_text: str,
+    model_id: str,
+) -> str:
+    client = get_deepseek_client()
+
+    response = client.chat.completions.create(
+        model=model_id,
+        messages=[
+            {
+                "role": "system",
+                "content": instructions,
+            },
+            {
+                "role": "user",
+                "content": payload_text,
+            },
+        ],
+        max_tokens=MAX_OUTPUT_TOKENS,
+        stream=False,
+        reasoning_effort=REASONING_EFFORT,
+        extra_body={
+            "thinking": {
+                "type": "enabled"
+            }
+        },
+    )
+
+    content = response.choices[0].message.content
+    return (content or "").strip()
+
+
 def call_model_json(
     instructions: str,
     payload: dict,
+    model_key: ModelKey,
 ) -> dict:
-    try:
-        client = get_openai_client()
+    config = get_model_config(model_key)
+    provider = config["provider"]
+    model_id = config["model_id"]
 
-        response = client.responses.create(
-            model=MODEL,
-            instructions=instructions,
-            input=json.dumps(
-                payload,
-                ensure_ascii=False,
-            ),
-            reasoning={
-                "effort": REASONING_EFFORT
-            },
-            text={
-                "verbosity": VERBOSITY
-            },
-            max_output_tokens=MAX_OUTPUT_TOKENS,
-        )
+    payload_text = json.dumps(
+        payload,
+        ensure_ascii=False,
+    )
+
+    try:
+        if provider == "openai":
+            raw_text = call_openai_text(
+                instructions=instructions,
+                payload_text=payload_text,
+                model_id=model_id,
+            )
+
+        elif provider == "anthropic":
+            raw_text = call_anthropic_text(
+                instructions=instructions,
+                payload_text=payload_text,
+                model_id=model_id,
+            )
+
+        elif provider == "google":
+            raw_text = call_gemini_text(
+                instructions=instructions,
+                payload_text=payload_text,
+                model_id=model_id,
+            )
+
+        elif provider == "deepseek":
+            raw_text = call_deepseek_text(
+                instructions=instructions,
+                payload_text=payload_text,
+                model_id=model_id,
+            )
+
+        else:
+            raise RuntimeError(
+                f"Unsupported provider: {provider}"
+            )
+
+    except HTTPException:
+        raise
 
     except Exception as error:
         print(
-            "OpenAI API error:",
+            f"{provider} API error:",
             type(error).__name__,
             str(error),
         )
 
         raise HTTPException(
             status_code=502,
-            detail="Failed to generate model response.",
+            detail=(
+                f"Failed to generate model response "
+                f"with {model_key}."
+            ),
         ) from error
-
-    raw_text = response.output_text.strip()
 
     if not raw_text:
         raise HTTPException(
             status_code=502,
-            detail="The model returned an empty response.",
+            detail=(
+                f"The {model_key} model returned "
+                "an empty response."
+            ),
         )
 
     try:
@@ -216,21 +496,28 @@ def call_model_json(
 
     except Exception as error:
         print(
-            "JSON parsing error:",
+            f"JSON parsing error ({model_key}):",
             type(error).__name__,
             str(error),
         )
 
         print(
-            "Raw model output:",
+            f"Raw {model_key} output:",
             raw_text,
         )
 
         raise HTTPException(
             status_code=502,
-            detail="The model returned invalid JSON.",
+            detail=(
+                f"The {model_key} model returned "
+                "invalid JSON."
+            ),
         ) from error
 
+
+# ---------------------------------
+# 대화 기록 함수
+# ---------------------------------
 
 def build_conversation_history(
     request: ChatRequest
@@ -279,6 +566,18 @@ def get_previous_socratic_questions(
     return assistant_messages[1:]
 
 
+def get_model_log_info(
+    request: ChatRequest
+) -> dict[str, str]:
+    config = get_model_config(request.model_key)
+
+    return {
+        "model_key": request.model_key,
+        "model_provider": config["provider"],
+        "model_id": config["model_id"],
+    }
+
+
 # ---------------------------------
 # Control 조건
 # ---------------------------------
@@ -305,6 +604,7 @@ def generate_control_reply(
     control_output = call_model_json(
         instructions=instructions,
         payload=payload,
+        model_key=request.model_key,
     )
 
     reply = control_output.get(
@@ -334,6 +634,7 @@ def generate_control_reply(
     module_record = {
         "turn_number": request.turn_number,
         "condition": request.condition,
+        **get_model_log_info(request),
         "prompt_file": "control.txt",
         "control_output": control_output,
         "final_reply": reply,
@@ -410,6 +711,7 @@ def run_socratic_module(
     return call_model_json(
         instructions=instructions,
         payload=payload,
+        model_key=request.model_key,
     )
 
 
@@ -445,6 +747,7 @@ def run_dean_module(
     return call_model_json(
         instructions=instructions,
         payload=payload,
+        model_key=request.model_key,
     )
 
 
@@ -693,6 +996,7 @@ def generate_socratic_reply(
     module_record = {
         "turn_number": request.turn_number,
         "condition": request.condition,
+        **get_model_log_info(request),
         "previous_socratic_questions": (
             previous_questions
         ),
@@ -784,9 +1088,14 @@ def chat(
             detail="A prompt file was not found.",
         ) from error
 
+    model_info = get_model_log_info(request)
+
     return ChatResponse(
         reply=reply,
         condition=request.condition,
         turn_number=request.turn_number,
+        model_key=model_info["model_key"],
+        model_provider=model_info["model_provider"],
+        model_id=model_info["model_id"],
         module_record=module_record,
     )
