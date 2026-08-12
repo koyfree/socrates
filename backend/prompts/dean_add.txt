@@ -38,7 +38,7 @@ Condition-Specific Rule
 Evaluation Task
 
 Evaluate whether the generated Socratic question follows the Socratic Module Reference and is appropriate in the context of the full conversation.
-
+Evaluate the question as part of the conversation sequence, not only as a standalone question.
 Determine the user's core position independently from the conversation history. Preserve who each claim, concern, example, or expected effect belongs to.
 
 Check whether the question has any of the following four failure types:
@@ -49,7 +49,7 @@ The question is not appropriately anchored to the user's core position or misrep
 Mark as Irrelevant if the question:
 - is disconnected from the researcher-provided topic, the user's core position, or relevant reasoning;
 - adds, strengthens, or misattributes a claim, concern, implication, or position the user did not express;
-- shifts the focus from the user's core position to a side point, example, consequence, or alternative perspective as a separate or continuing topic of inquiry, including by chaining multiple follow-up questions within the same example or consequence;
+- shifts the focus from the user's core position to a side point, example, or consequence as a continuing topic of inquiry, including by asking about the consequence of a consequence or chaining follow-up questions within the same example instead of moving to a different aspect of the core position;
 - treats a detail mentioned only in the researcher-provided topic as something the user has specifically endorsed;
 - continues probing an alternative viewpoint that the user generated in response to a previous Socratic question, rather than returning to the user's core position;
 - continues exploring, testing, or generating further problems or consequences of a solution, qualification, or workaround that the user proposed only in response to an assistant-raised concern, rather than treating that line as completed and returning to the user's core position; or
