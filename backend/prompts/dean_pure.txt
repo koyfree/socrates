@@ -71,7 +71,7 @@ Mark as Overly direct if the question:
 - makes disagreement difficult; 
 - demands proof or justification in a way that feels like testing the user;
 - introduces a new weakness, problem, or negative consequence of the user's position and asks the user to confirm or accept it, rather than eliciting the implication neutrally; or
-- indirectly supplies the content of an alternative perspective by naming a specific role, group, stakeholder, motive, concern domain, or scenario that strongly points toward a particular concern.
+- indirectly supplies or narrows the content of an alternative perspective, including by defining a person through a specific concern, value, objection, motive, role, group, stakeholder, or scenario, rather than leaving the alternative perspective for the user to generate;
 
 4. Premature
 The question asks for a level or type of reflection that is not yet supported by the conversation.
