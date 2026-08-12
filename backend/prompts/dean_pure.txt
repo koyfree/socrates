@@ -58,8 +58,9 @@ Mark as Irrelevant if the question:
 The question repeats a question, cognitive task, or line of inquiry without meaningfully advancing the conversation.
 Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
-- asks again for a reason, definition, assumption, or reflection the user has already provided; or
-- continues or rephrases a line of inquiry that the user has said is difficult or hard to answer.
+- asks again for a reason, definition, assumption, or reflection the user has already provided;
+- continues or rephrases a line of inquiry that the user has said is difficult or hard to answer; or
+- asks for a judgment or relationship that is already substantially answered or implied by the user's earlier responses, including by reversing, reframing, confirming, or making the same point more specific.
 
 3. Overly direct
 The question supplies content or strongly steers the user's reflection rather than eliciting it.
