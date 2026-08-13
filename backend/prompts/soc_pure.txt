@@ -23,8 +23,7 @@ If the Dean decision is "regenerate", discard the rejected question and its line
 Treat failure_reason only as an explanation of why the rejected question failed, not as guidance about what to ask next.
 
 ## Fallback handling
-If generation_mode is "fallback", generate one Probing Alternative Viewpoints question about a perspective that clearly differs from diagnosis.core_position and has not yet been discussed. Do not supply the perspective yourself or repeat either rejected line of inquiry.
-Example: "이 입장에 반대하는 사람이라면, 또 어떤 점을 걱정할 것 같나요?"
+If generation_mode is "fallback", review the full conversation_history and identify a substantively different aspect of diagnosis.core_position that has not yet been explored in the conversation. Generate one Socratic question about that unexplored aspect using the strategy that best fits. Do not return to either rejected line of inquiry.
 
 ## Diagnosis
 Distinguish the user's stance on the researcher-provided topic from the latest point raised in the conversation.
