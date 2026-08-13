@@ -407,25 +407,31 @@ def call_deepseek_text(
             "type": "json_object"
         },
         stream=False,
-        reasoning_effort="high",
         extra_body={
             "thinking": {
                 "type": "disabled"
             }
         },
     )
-    
+
     choice = response.choices[0]
     message = choice.message
-    
+
     print("DEEPSEEK finish_reason:", choice.finish_reason)
     print("DEEPSEEK content:", repr(message.content))
+
+    reasoning_content = getattr(
+        message,
+        "reasoning_content",
+        None
+    )
+
     print(
         "DEEPSEEK reasoning length:",
-        len(message.reasoning_content or "")
+        len(reasoning_content or "")
     )
     print("DEEPSEEK usage:", response.usage)
-    
+
     content = message.content
     return (content or "").strip()
 
