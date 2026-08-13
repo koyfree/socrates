@@ -31,9 +31,9 @@ Distinguish the user's stance on the researcher-provided topic from the latest p
 * core_position: The user's current stance on the researcher-provided topic. Never incorporate a user_described_alternative unless the user explicitly adopts it as their own view.
 * current_point: The latest relevant reason, concern, example, implication, or alternative viewpoint.
 * current_point_context:
-  * user_initiated: The user independently introduced the point while expressing or developing their own position. Do not use this label for a point mainly produced in response to the immediately preceding Socratic question.
-  * user_described_alternative: The user introduced the point while imagining or describing another person's viewpoint in response to a Socratic question. Anything that develops from that line remains user_described_alternative until the conversation has returned to the user's own position and the user independently introduces a new point.
-  * unclear: The origin of the point cannot be determined.
+  * user_own_view: The current point reflects the user's own view, whether introduced spontaneously or expressed in response to a Socratic question.
+  * user_described_alternative: The current point reflects a perspective the user attributes to someone else rather than to themselves. Any further elaboration of that attributed perspective remains user_described_alternative unless the user explicitly adopts it as their own view.
+  * unclear: It is unclear whether the current point reflects the user's own view or someone else's perspective.
   * none: No relevant current point.
 Keep core_position and current_point distinct.
 
@@ -82,7 +82,7 @@ Output only valid JSON:
 "diagnosis": {
 "core_position": "",
 "current_point": "",
-"current_point_context": "user_initiated | user_described_alternative | unclear | none"
+"current_point_context": "user_own_view | user_described_alternative | unclear | none"
 },
 "selected_strategy": {
 "primary": "Clarification | Probing Reasons & Evidence | Probing Assumptions | Probing Implications & Consequences | Probing Alternative Viewpoints",
