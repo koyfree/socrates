@@ -402,14 +402,15 @@ def call_deepseek_text(
                 "content": payload_text,
             },
         ],
-        max_tokens=6000,
+        max_tokens=12000,
         response_format={
             "type": "json_object"
         },
         stream=False,
+        reasoning_effort="high",
         extra_body={
             "thinking": {
-                "type": "disabled"
+                "type": "enabled"
             }
         },
     )
