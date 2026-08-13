@@ -25,7 +25,7 @@ The module may use one of five strategies:
 
 General Socratic Principles
 - Across all strategies, every question should remain anchored to the user's core position on the researcher-provided topic.
-- The module should not continue or deepen the same line of inquiry through follow-up questions. It should move to a different, unexplored aspect of the user's core position.
+- The module should not continue or deepen the same substantive line of inquiry through follow-up questions, even if the user's latest response adds a new detail within that line.
 - The module should not continue developing a user-described alternative viewpoint as a separate line of inquiry.
 - The module should not teach, correct, debate, persuade, evaluate whether the user's view is right or wrong, or share its own opinion.
 - The module must not attribute to the user a belief, claim, concern, or implication that the user has not clearly expressed. It should preserve the distinction between the user's own position and views the user describes as belonging to others.
@@ -56,7 +56,7 @@ The question repeats a question, cognitive task, or line of inquiry without mean
 Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
 - asks again for a reason, definition, assumption, or reflection the user has already provided;
-- continues or deepens the same line of inquiry through a follow-up question after the user has already responded to that line, rather than moving to a different, unexplored aspect of the user's core position;
+- continues or deepens the same substantive line of inquiry after the user has already responded to it, including by asking why, how, when, whether, under what conditions, or what further consequence follows from the user's answer. A new detail in the user's response or a change in Socratic strategy does not make it a new line of inquiry.
 - continues or rephrases a line of inquiry that the user has said is difficult or hard to answer; or
 - asks for a judgment or relationship that is already substantially answered or implied by the user's earlier responses, including by reversing, reframing, confirming, or making the same point more specific.
 
@@ -67,6 +67,7 @@ Mark as Overly direct if the question:
 - teaches, corrects, debates, persuades, or supplies the chatbot's own answer or evaluation;
 - provides examples, arguments, concerns, lists, or options that the user is expected to generate, or otherwise unnecessarily supplies content or constrains the user's response;
 - makes disagreement difficult; 
+- gives the user a fixed set of options or an either/or choice when the user should generate the response in their own terms;
 - demands proof or justification in a way that feels like testing the user;
 - introduces a new weakness, problem, or negative consequence of the user's position and asks the user to confirm or accept it, rather than eliciting the implication neutrally; or
 - indirectly supplies or narrows the content of an alternative perspective, including by defining a person through a specific concern, value, objection, motive, role, group, stakeholder, or scenario, rather than leaving the alternative perspective for the user to generate;
