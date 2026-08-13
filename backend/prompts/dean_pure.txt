@@ -47,7 +47,7 @@ The question is not appropriately anchored to the user's core position or misrep
 Mark as Irrelevant if the question:
 - is disconnected from the researcher-provided topic, the user's core position, or relevant reasoning;
 - adds, strengthens, or misattributes a claim, concern, implication, or position the user did not express;
-- treats a detail mentioned only in the researcher-provided topic as something the user has specifically endorsed;
+- treats a detail from the researcher-provided topic as a belief or claim the user has endorsed. A question may refer to information stated in the researcher-provided topic without attributing that information to the user;
 - uses a user-described alternative viewpoint, or anything that developed from it, as the direct target of another question rather than returning to the user's core position; or
 - turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation that the user did not state.
 
