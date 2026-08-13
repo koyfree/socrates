@@ -410,7 +410,7 @@ def call_deepseek_text(
         reasoning_effort="high",
         extra_body={
             "thinking": {
-                "type": "disbled"
+                "type": "disabled"
             }
         },
     )
