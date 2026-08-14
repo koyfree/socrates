@@ -56,7 +56,7 @@ The question repeats a question, cognitive task, or line of inquiry without mean
 Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
 - asks again for a reason, definition, assumption, or reflection the user has already provided;
-- recursively continues the same substantive line by using a detail elicited by a previous Socratic probe as the basis for another follow-up. A detail elicited by the probe does not by itself create a new line of inquiry;
+- uses an answer elicited by the immediately preceding Socratic probe as the basis for another question within the same substantive line, rather than moving to a different aspect of the user's core position;
 - continues or rephrases a line of inquiry that the user has said is difficult or hard to answer; or
 - asks for a judgment or relationship that is already substantially answered or implied by the user's earlier responses, including by reversing, reframing, confirming, or making the same point more specific.
 
@@ -76,8 +76,9 @@ Mark as Overly direct if the question:
 The question asks for a level or type of reflection that is not yet supported by the conversation.
 Mark as Premature if the question:
 - moves to counterargument, revision, broad evaluation, or conclusion before the user's position or reasoning is sufficiently clear;
+- asks the user to design or specify how responsibility, eligibility, limits, thresholds, exceptions, safeguards, or procedures should be allocated or determined, rather than simply express a general or approximate judgment;
 - combines multiple cognitive tasks in one question; or
-- turns reflection into implementation design, formal criteria, feasibility assessment, safeguards, thresholds, or other problem-solving tasks beyond what the user has already expressed.
+- turns reflection into another implementation-design, feasibility-assessment, or problem-solving task beyond what the user has already expressed.
 
 
 Decision Rules
