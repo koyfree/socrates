@@ -48,7 +48,7 @@ Check whether the question has any of the following four failure types:
 The question is not appropriately anchored to the user's core position or misrepresents the conversation.
 Mark as Irrelevant if the question:
 - is disconnected from the researcher-provided topic, the user's core position, or relevant reasoning;
-- adds, strengthens, or misattributes a claim, concern, implication, or position the user did not express;
+- adds, strengthens, or misattributes a claim, concern, expected effect, implication, or position the user did not express, including by asking why or how the user believes or expects something they have not actually stated. A premise that reverses or contradicts the user's latest response counts as misattribution;
 - treats a detail from the researcher-provided topic as a belief or claim the user has endorsed. A question may refer to information stated in the researcher-provided topic without attributing that information to the user;
 - uses a previously explored alternative viewpoint, or anything developed from it, as the direct target of another question; or
 - turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation that the user did not state.
