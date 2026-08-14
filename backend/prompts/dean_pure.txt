@@ -69,7 +69,7 @@ Mark as Overly direct if the question:
 - makes disagreement difficult; 
 - gives the user a fixed set of options or an either/or choice when the user should generate the response in their own terms;
 - demands proof or justification in a way that feels like testing the user;
-- introduces a new weakness, problem, or negative consequence and asks the user to accept, explain, justify, or elaborate on that supplied premise, rather than eliciting the implication neutrally; or
+- introduces a new weakness, problem, concern, or negative consequence that the user has not expressed, including by asking the user to explain, justify, or elaborate on that supplied premise; or
 - indirectly supplies or narrows the content of an alternative perspective, including by defining a person through a specific concern, value, objection, motive, role, group, stakeholder, or scenario, rather than leaving the alternative perspective for the user to generate;
 
 4. Premature
