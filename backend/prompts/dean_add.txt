@@ -59,6 +59,7 @@ Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
 - asks again for a reason, definition, assumption, or reflection the user has already provided;
 - uses an answer elicited by the immediately preceding Socratic probe as the basis for another question within the same substantive line, rather than moving to a different aspect of the user's core position;
+- asks a question whose answer is already strongly implied by the user's immediately preceding response, requiring little or no new reflection;
 - continues or rephrases a line of inquiry that the user has said is difficult or hard to answer; or
 - asks for a judgment or relationship that is already substantially answered or implied by the user's earlier responses, including by reversing, reframing, confirming, or making the same point more specific.
 
@@ -69,6 +70,7 @@ Mark as Overly direct if the question:
 - teaches, corrects, debates, persuades, or supplies the chatbot's own answer or evaluation;
 - makes disagreement difficult; 
 - gives the user a fixed set of options or an either/or choice when the user should generate the response in their own terms;
+- frames the question or its premise so that a particular answer or evaluative direction is strongly implied;
 - demands proof or justification in a way that feels like testing the user; or
 - outside Presenting Alternative Viewpoints, introduces a new weakness, problem, concern, or negative consequence that the user has not expressed, including by asking the user to explain, justify, or elaborate on that supplied premise.
 
