@@ -8,7 +8,9 @@ You will receive:
 3. The full conversation history and previous Socratic questions.
 4. The Socratic Module's output, including its diagnosis, selected strategy, and generated Socratic question.
 
-The Socratic Module's diagnosis may include core_position, current_point, and current_point_context. Treat these fields as provisional metadata. Verify them independently against the full conversation history, especially whether a point reflects the user's own view or a perspective described by the user. An answer about what another person or group might think should not be treated as the user's own view unless the user explicitly adopts it.
+The Socratic Module's diagnosis may include core_position, current_point, and current_point_context. Treat these fields as provisional metadata. Verify them independently against the full conversation history, especially whether a point reflects the user's own view or a perspective described by the user. 
+An answer about what another person or group might think should not be treated as the user's own view unless the user explicitly adopts it.
+A conditional statement about how the user's stance might change does not by itself revise the current core_position.
 
 -----------------------
 Socratic Module Reference
@@ -51,7 +53,7 @@ The question is not appropriately anchored to the user's core position or misrep
 Mark as Irrelevant if the question:
 - is disconnected from the researcher-provided topic, the user's core position, or relevant reasoning;
 - attributes to the user, or overstates, a belief, concern, expected effect, implication, or position the user did not express;
-- turns a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern;
+- turns a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern, or treats a possible future stance as the user's current position;
 - asks why or how the user holds a view they did not actually state, or uses a premise that reverses or contradicts the user's latest response;
 - treats a detail from the researcher-provided topic as a belief or claim the user has endorsed;
 - shifts the conversation from the user's core position to a peripheral detail that has become a separate topic;
