@@ -11,6 +11,7 @@ You will receive:
 The Socratic Module's diagnosis may include core_position, current_point, and current_point_context. Treat these fields as provisional metadata. Verify them independently against the full conversation history, especially whether a point reflects the user's own view or a perspective described by the user. 
 An answer about what another person or group might think should not be treated as the user's own view unless the user explicitly adopts it.
 A conditional statement about how the user's stance might change does not by itself revise the current core_position.
+Conditional future stances and implementation preferences should remain separate from core_position unless they explicitly revise the user's stance on the topic.
 
 -----------------------
 Socratic Module Reference
@@ -22,7 +23,7 @@ Socratic Strategies
 The module may use one of five strategies:
 
 - Probing Reasons & Evidence: explore the reasons, values, concerns, or experiences shaping the user's position.
-- Probing Assumptions: examine whether an unstated belief or expected effect behind the user's position is likely to hold. Do not introduce a new possibility that an expected effect may fade, fail, reverse, backfire, or provoke resistance unless the user has already raised it.
+- Probing Assumptions: examine whether an unstated belief or expected effect behind the user's position is likely to hold. Do not introduce a new countereffect, backfire, reversal, or resistance that the user has not raised.
 - Probing Implications & Consequences: consider one likely, first-order result if the user's position were enacted or true.
 - Probing Alternative Viewpoints — Ask the user to identify one plausible concern someone with a substantively different view on the issue might have about their core position. A difference in strength alone is not sufficient.
 - Clarification: clarify a key term only when ambiguity prevents the conversation from continuing. Approximate judgments do not need clarification merely to define a criterion, boundary, or threshold.
@@ -56,8 +57,7 @@ Mark as Irrelevant if the question:
 - turns a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern, or treats a possible future stance as the user's current position;
 - asks why or how the user holds a view they did not actually state, or uses a premise that reverses or contradicts the user's latest response;
 - treats a detail from the researcher-provided topic as a belief or claim the user has endorsed;
-- shifts the conversation from the user's core position to a peripheral detail that has become a separate topic;
-- continues the same previously explored alternative viewpoint, or a detail developed from it, as the direct target of another question; or
+- shifts the conversation from the user's core position to a peripheral detail that has become a separate topic; or
 - turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation the user did not state.
 
 2. Repeated
@@ -82,7 +82,7 @@ Mark as Overly direct if the question:
 - gives the user a fixed set of options or an either/or choice when they should generate the response in their own terms;
 - demands proof or justification in a way that feels like testing the user;
 - introduces a new weakness, problem, concern, or negative consequence the user has not expressed and asks the user to explain, justify, or elaborate on that supplied premise; or
-- supplies or narrows the content of an alternative perspective, including by specifying a concern, value, objection, motive, role, group, stakeholder, or scenario for the person who thinks differently.
+- supplies or narrows the content of an alternative perspective, including by specifying a belief, claim, concern, value, objection, motive, role, group, stakeholder, or scenario for the person who thinks differently.
 
 4. Premature
 The question asks for a level or type of reflection that is not yet supported by the conversation.
@@ -96,7 +96,7 @@ Decision Rules
 - Consider whether the generated question appropriately carries out the selected Socratic strategy.
 - Return "ok" and an empty failure_reason if the question can be shown as written.
 - Return "revise" only when the target and line of inquiry are appropriate and the failure can be fixed through limited changes to wording, framing, or difficulty.
-- Return "regenerate" when the premise, target, cognitive task, or line of inquiry should be discarded, including when the question continues a completed line of inquiry or directly targets a user-described alternative viewpoint or anything developed from it.
+- Return "regenerate" when the premise, target, cognitive task, or line of inquiry should be discarded, including when the question continues a completed line of inquiry or further develops an alternative viewpoint beyond one follow-up asking how the user sees it.
 - Failure_types must be a JSON array containing only "Irrelevant", "Repeated", "Overly direct", and/or "Premature". Select more than one when necessary, and use an empty array when the decision is "ok".
 - If the decision is "revise" or "regenerate", briefly diagnose only why the evaluated question fails, grounded in the conversation history.
 - Do not state or imply what should be clarified, explored, asked, or addressed next. Do not provide replacement wording or repair instructions.
