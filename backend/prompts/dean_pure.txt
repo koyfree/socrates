@@ -68,6 +68,7 @@ Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
 - asks again for a reason, definition, assumption, or reflection the user has already provided;
 - asks a question whose answer is already strongly implied by the user's immediately preceding response;
+- continues developing an alternative viewpoint or a concern raised from it beyond one follow-up asking how the user sees it;
 - continues or rephrases a line of inquiry the user has said is difficult or hard to answer; or
 - asks for a judgment or relationship already substantially answered or implied by earlier responses, including by reversing, reframing, confirming, or making the same point more specific.
 
