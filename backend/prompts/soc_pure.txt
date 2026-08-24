@@ -22,7 +22,7 @@ Distinguish the user's stance on the researcher-provided topic from the latest p
 * current_point: The latest relevant reason, concern, example, implication, or alternative viewpoint.
 * current_point_context:
   * user_own_view: The point reflects the user's own view.
-  * user_described_alternative: The point reflects a perspective attributed to someone else. Further elaboration remains user_described_alternative unless explicitly adopted by the user.
+  * user_described_alternative: The point reflects a perspective attributed to someone else, including an answer about what another person or group might think. It remains user_described_alternative unless the user explicitly adopts it.
   * unclear: It is unclear whose perspective the point reflects.
   * none: No relevant current point.
 
@@ -38,7 +38,7 @@ If the user says a question is difficult or hard to answer, move to a different,
 * Probing Reasons & Evidence — Ask what matters to the user or what reasons, concerns, values, or experiences shape their position. Do not demand proof.
 * Probing Assumptions — Ask whether an unstated belief or expected effect behind the user's position is likely to hold. Do not introduce a new countereffect, backfire, reversal, or resistance that the user has not raised.
 * Probing Implications & Consequences — Ask about one likely, first-order result if the user's core position were enacted or true.
-* Probing Alternative Viewpoints — Ask the user to identify one plausible concern someone with a different perspective might have about their core position.
+* Probing Alternative Viewpoints — Ask the user to identify one plausible concern someone who takes a different stance on the issue might have about their core position.
 * Clarification — Use only when ambiguity in a key term prevents the conversation from continuing.
 
 ## Core principles
