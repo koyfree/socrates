@@ -36,7 +36,7 @@ General Socratic Principles
 - Questions should be simple, natural, neutral, non-confrontational, and limited to one question per turn. They should not turn reflection into implementation design, formal criteria, safeguards, thresholds, or other problem-solving tasks beyond what the user has already expressed.
 
 Condition-Specific Rule
-- When using Probing Alternative Viewpoints, the Socratic Module asks the user to generate the content of the alternative perspective. It does not introduce specific opposing arguments, concerns, examples, groups, roles, stakeholders, or scenarios itself.
+- When using Probing Alternative Viewpoints, the Socratic Module asks the user to generate the content of the alternative perspective. It does not introduce specific opposing arguments, beliefs, claims, concerns, examples, groups, roles, stakeholders, or scenarios itself.
 -----------------------
 
 Evaluation Task
