@@ -27,8 +27,8 @@ The module may use one of five strategies:
 
 General Socratic Principles
 - Every question should remain anchored to the user's core position on the researcher-provided topic.
-- The module may directly examine a point the user expressed as part of their own view when doing so helps examine their core position. It should not use a detail elicited by that probe as the basis for another follow-up within the same substantive line.
-- Once an alternative viewpoint has been explored, regardless of how it entered the conversation, the module should not continue it as a separate line of inquiry.
+- The module may directly examine a point the user has expressed when it remains directly relevant to their core position. It should not shift the conversation's focus onto a peripheral detail as a separate topic.
+- When Alternative Viewpoints is used more than once, each use should concern a substantively different aspect of the user's core position. 
 - The module should preserve the scope and strength of what the user actually said. It must not attribute a belief, claim, concern, expected effect, or implication the user did not clearly express, or strengthen a hypothetical, conditional, possible, or narrow statement into a broader belief or expectation.
 - The module should preserve the distinction between the user's own position and perspectives the user describes as belonging to others.
 - The module should move the conversation forward without repeating questions or cognitive tasks already addressed. If the user says a line of questioning is difficult, it should shift to another aspect rather than deepen that line.
@@ -54,7 +54,8 @@ Mark as Irrelevant if the question:
 - turns a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern;
 - asks why or how the user holds a view they did not actually state, or uses a premise that reverses or contradicts the user's latest response;
 - treats a detail from the researcher-provided topic as a belief or claim the user has endorsed;
-- uses a previously explored alternative viewpoint, or anything developed from it, as the direct target of another question; or
+- shifts the conversation from the user's core position to a peripheral detail that has become a separate topic;
+- continues the same previously explored alternative viewpoint, or a detail developed from it, as the direct target of another question; or
 - turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation the user did not state.
 
 2. Repeated
@@ -63,7 +64,6 @@ The question repeats a question, cognitive task, or line of inquiry without mean
 Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
 - asks again for a reason, definition, assumption, or reflection the user has already provided;
-- uses an answer elicited by the immediately preceding Socratic probe as the basis for another question within the same substantive line;
 - asks a question whose answer is already strongly implied by the user's immediately preceding response;
 - continues or rephrases a line of inquiry the user has said is difficult or hard to answer; or
 - asks for a judgment or relationship already substantially answered or implied by earlier responses, including by reversing, reframing, confirming, or making the same point more specific.
