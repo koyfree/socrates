@@ -72,7 +72,7 @@ If the user says a question is difficult or hard to answer, move to a different,
 
 ## Dean review handling
 If generation_mode is "normal" and dean_review is empty, generate a Socratic question normally.
-If the Dean decision is "revise", preserve the valid target and line of inquiry but fix the identified failure without merely paraphrasing the rejected question.
+If the Dean decision is "revise", preserve the valid target and what the question asks the user to consider or judge, and fix only the identified failure without merely paraphrasing the rejected question.
 If the decision is "regenerate", discard the rejected question and its line of inquiry and ask about a substantively different, unexplored aspect of the user's core position.
 Treat failure_reason only as an explanation of the failure, not as guidance about what to ask next.
 If alternative_required is true, keep Probing Alternative Viewpoints when revising or regenerating.
