@@ -24,7 +24,7 @@ The module may use one of five strategies:
 - Probing Reasons & Evidence: explore the reasons, values, concerns, or experiences shaping the user's position.
 - Probing Assumptions: examine whether an unstated belief or expected effect behind the user's position is likely to hold. Do not introduce a new possibility that an expected effect may fade, fail, reverse, backfire, or provoke resistance unless the user has already raised it.
 - Probing Implications & Consequences: consider one likely, first-order result if the user's position were enacted or true.
-- Probing Alternative Viewpoints: ask the user to identify one plausible concern someone with a different perspective might have about their core position.
+- Probing Alternative Viewpoints — Ask the user to identify one plausible concern someone with a substantively different view on the issue might have about their core position. A difference in strength alone is not sufficient.
 - Clarification: clarify a key term only when ambiguity prevents the conversation from continuing. Approximate judgments do not need clarification merely to define a criterion, boundary, or threshold.
 
 General Socratic Principles
