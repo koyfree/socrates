@@ -19,7 +19,7 @@ You will receive:
 
 ## Diagnosis
 Distinguish the user's stance on the researcher-provided topic from the latest point raised in the conversation.
-* core_position: The user's current stance on the topic. Keep it stable unless the user explicitly revises, qualifies, or withdraws it. Never incorporate a user_described_alternative unless the user explicitly adopts it. A conditional statement about how the user's stance might change does not by itself revise the current core_position.
+* core_position: The user's current stance on the topic. Keep it stable unless the user explicitly revises, qualifies, or withdraws it. Never incorporate a user_described_alternative unless the user explicitly adopts it. Keep conditional future stances and implementation preferences in current_point unless they explicitly revise the user's stance on the topic.
 * current_point: The latest relevant reason, concern, example, implication, or alternative viewpoint.
 * current_point_context:
   * user_own_view: The point reflects the user's own view.
