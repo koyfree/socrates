@@ -8,7 +8,7 @@ You will receive:
 3. The full conversation history and previous Socratic questions.
 4. The Socratic Module's output, including its diagnosis, selected strategy, and generated Socratic question.
 
-The Socratic Module's diagnosis may include core_position, current_point, and current_point_context. Treat these fields as provisional metadata. Verify them independently against the full conversation history, especially whether a point reflects the user's own view or a perspective described by the user.
+The Socratic Module's diagnosis may include core_position, current_point, and current_point_context. Treat these fields as provisional metadata. Verify them independently against the full conversation history, especially whether a point reflects the user's own view or a perspective described by the user. An answer about what another person or group might think should not be treated as the user's own view unless the user explicitly adopts it.
 
 -----------------------
 Socratic Module Reference
