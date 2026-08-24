@@ -122,6 +122,11 @@ class ChatRequest(BaseModel):
 
     turn_number: int = Field(ge=1)
 
+    # Socratic 조건에서 현재 턴에 Alternative Viewpoints가
+    # 반드시 필요한지 프론트에서 계산해 전달합니다.
+    # Control 조건에서는 사용하지 않습니다.
+    alternative_required: bool = False
+
     conversation_history: list[ConversationMessage] = Field(
         default_factory=list
     )
@@ -720,6 +725,7 @@ def run_socratic_module(
         "user_response": request.user_message,
         "turn_number": request.turn_number,
         "previous_socratic_questions": previous_questions,
+        "alternative_required": request.alternative_required,
         "conversation_history": conversation_history,
         "dean_review": dean_review or {},
         "generation_mode": generation_mode,
@@ -1019,6 +1025,9 @@ def generate_socratic_reply(
         **get_model_log_info(request),
         "previous_socratic_questions": (
             previous_questions
+        ),
+        "alternative_required": (
+            request.alternative_required
         ),
 
         "first_socratic_output": (
