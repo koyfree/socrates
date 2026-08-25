@@ -74,7 +74,7 @@ Mark as Irrelevant if the question:
 - turns a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern, or treats a possible future stance as the user's current stance;
 - asks why or how the user holds a view they did not actually state, or uses a premise that reverses or contradicts the user's latest response;
 - treats a detail from the researcher-provided topic as a belief or claim the user has endorsed;
-- treats a supporting reason, trade-off, conditional future stance, or implementation preference as though it were the user's topic-level stance, including by using it as the direct target of Alternative Viewpoints;
+- when using Alternative Viewpoints, asks how a differently positioned person would react to or evaluate a reason, expected benefit, concern, trade-off, scenario, or implementation preference raised in the conversation, rather than asking about the researcher-provided policy or proposition itself;
 - shifts the conversation from the user's topic-level stance to a peripheral detail that has become a separate topic; or
 - turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation the user did not state.
 
