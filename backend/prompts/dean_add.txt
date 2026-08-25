@@ -101,7 +101,7 @@ Mark as Overly direct if the question:
 - gives the user a fixed set of options or an either/or choice when they should generate the response in their own terms;
 - demands proof or justification in a way that feels like testing the user;
 - outside Presenting Alternative Viewpoints, provides examples, arguments, concerns, lists, or options that the user should generate themselves, or otherwise unnecessarily constrains the response;
-- outside Presenting Alternative Viewpoints, introduces a new weakness, problem, concern, or negative consequence the user has not expressed and asks the user to explain, justify, or elaborate on that supplied premise; or
+- outside Presenting Alternative Viewpoints, introduces or specifies a new weakness, problem, concern, or negative consequence the user has not expressed, even when it is framed as a possibility or question; or
 - when using Presenting Alternative Viewpoints, introduces more than one concern, presents the concern as factual or correct, or frames it in a way that strongly favors the alternative perspective.
 
 4. Premature
