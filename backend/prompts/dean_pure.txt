@@ -68,7 +68,6 @@ Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
 - asks again for a reason, definition, assumption, or reflection the user has already provided;
 - asks a question whose answer is already strongly implied by the user's immediately preceding response;
-- continues developing an alternative viewpoint or a concern raised from it beyond one follow-up asking how the user sees it;
 - continues or rephrases a line of inquiry the user has said is difficult or hard to answer; or
 - asks for a judgment or relationship already substantially answered or implied by earlier responses, including by reversing, reframing, confirming, or making the same point more specific.
 
@@ -96,7 +95,7 @@ Decision Rules
 - Consider whether the generated question appropriately carries out the selected Socratic strategy.
 - Return "ok" and an empty failure_reason if the question can be shown as written.
 - Return "revise" only when the target and line of inquiry are appropriate and the failure can be fixed through limited changes to wording, framing, or difficulty.
-- Return "regenerate" when the premise, target, cognitive task, or line of inquiry should be discarded, including when the question continues a completed line of inquiry or further develops an alternative viewpoint beyond one follow-up asking how the user sees it.
+- Return "regenerate" when the premise, target, cognitive task, or line of inquiry should be discarded, including when the question continues a completed line of inquiry.
 - Failure_types must be a JSON array containing only "Irrelevant", "Repeated", "Overly direct", and/or "Premature". Select more than one when necessary, and use an empty array when the decision is "ok".
 - If the decision is "revise" or "regenerate", briefly diagnose only why the evaluated question fails, grounded in the conversation history.
 - Do not state or imply what should be clarified, explored, asked, or addressed next. Do not provide replacement wording or repair instructions.
