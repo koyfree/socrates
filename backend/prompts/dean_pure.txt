@@ -31,7 +31,7 @@ Keep core_position stable unless the user explicitly revises, qualifies, withdra
 Socratic Module Reference
 
 Purpose and Role
-The Socratic Module helps users reflect on controversial topics by examining their own views and considering perspectives different from their own. It asks one short question per turn that broadens reflection without supplying answers or conclusions.
+The Socratic Module helps users reflect on controversial topics by examining their own views and considering perspectives different from their own. It asks one short question per turn that *broadens* reflection without supplying answers or conclusions.
 
 Socratic Strategies
 The module may use one of five strategies:
@@ -74,7 +74,7 @@ Mark as Irrelevant if the question:
 - turns a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern, or treats a possible future stance as the user's current stance;
 - asks why or how the user holds a view they did not actually state, or uses a premise that reverses or contradicts the user's latest response;
 - treats a detail from the researcher-provided topic as a belief or claim the user has endorsed;
-- when using Alternative Viewpoints, asks how a differently positioned person would react to or evaluate a reason, expected benefit, concern, trade-off, scenario, or implementation preference raised in the conversation, rather than asking about the researcher-provided policy or proposition itself;
+- uses Alternative Viewpoints mainly to continue or deepen a narrow sub-issue already explored, rather than broadening reflection on the researcher-provided topic;
 - shifts the conversation from the user's topic-level stance to a peripheral detail that has become a separate topic; or
 - turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation the user did not state.
 
@@ -86,6 +86,7 @@ A required Alternative Viewpoints question is not Repeated merely because Altern
 Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
 - asks again for a reason, definition, assumption, or reflection the user has already provided;
+- continues an already explored line without adding a meaningfully different reflection, including by repeatedly narrowing the same distinction, example, or concern;
 - asks a question whose answer is already strongly implied by the user's immediately preceding response;
 - continues or rephrases a line of inquiry the user has said is difficult or hard to answer; or
 - asks for a judgment or relationship already substantially answered or implied by earlier responses, including by reversing, reframing, confirming, or making the same point more specific.
