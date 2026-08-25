@@ -90,7 +90,7 @@ Before returning the answer, verify that the proposed question:
 - opens a meaningful reflection rather than merely making an answered point more specific;
 - remains anchored to the researcher-provided `topic`;
 - does not repeat a question or cognitive task already addressed;
-- does not attribute unexpressed content to the user or supply new content, except for the single neutral concern permitted in Presenting Alternative Viewpoints;
+- outside Presenting Alternative Viewpoints, does not introduce or specify a new concern, problem, negative consequence, or other substantive perspective that the user has not expressed;
 - actually follows the selected strategy and any required strategy constraint.
 
 If it fails any of these checks, revise the question before output.
