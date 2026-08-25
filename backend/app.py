@@ -94,6 +94,16 @@ ModelKey = Literal[
     "deepseek",
 ]
 
+PreviousCorePosition = Literal[
+    "support",
+    "lean_support",
+    "oppose",
+    "lean_oppose",
+    "mixed",
+    "unsure",
+    "none",
+]
+
 
 class ConversationMessage(BaseModel):
     role: Literal["user", "assistant"]
@@ -126,6 +136,11 @@ class ChatRequest(BaseModel):
     # 반드시 필요한지 프론트에서 계산해 전달합니다.
     # Control 조건에서는 사용하지 않습니다.
     alternative_required: bool = False
+
+    # 직전 최종 Socratic output의 topic-level core_position입니다.
+    # 첫 Socratic 턴에는 프론트에서 "none"을 보냅니다.
+    # Control 조건에서는 사용하지 않습니다.
+    previous_core_position: PreviousCorePosition = "none"
 
     conversation_history: list[ConversationMessage] = Field(
         default_factory=list
@@ -726,6 +741,7 @@ def run_socratic_module(
         "turn_number": request.turn_number,
         "previous_socratic_questions": previous_questions,
         "alternative_required": request.alternative_required,
+        "previous_core_position": request.previous_core_position,
         "conversation_history": conversation_history,
         "dean_review": dean_review or {},
         "generation_mode": generation_mode,
@@ -757,6 +773,7 @@ def run_dean_module(
         "topic": request.topic,
         "user_response": request.user_message,
         "previous_socratic_questions": previous_questions,
+        "previous_core_position": request.previous_core_position,
         "conversation_history": conversation_history,
         "socratic_module_output": socratic_output,
         "socratic_question": socratic_output.get(
@@ -1028,6 +1045,9 @@ def generate_socratic_reply(
         ),
         "alternative_required": (
             request.alternative_required
+        ),
+        "previous_core_position": (
+            request.previous_core_position
         ),
 
         "first_socratic_output": (
