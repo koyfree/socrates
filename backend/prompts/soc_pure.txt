@@ -62,8 +62,9 @@ When `generation_mode` is "fallback", go to the step 8.
 
 ### 3. Identify what should be explored next
 
-3-1. Based on the conversation so far, distinguish what has already been meaningfully explored from what remains unexplored. Avoid returning to lines that have become repetitive or increasingly narrow, and identify one aspect of the user's topic-level stance that would be useful to explore next.
-- Prefer broadening the reflection by examining the user's stance from another meaningful angle, rather than continuing a line mainly by making the user's previous answer more specific.
+3-1. Based on the conversation so far, identify one aspect of the user's topic-level stance that would broaden the range of reflection. 
+- Prefer exploring a less-examined aspect of the stance over further developing the line of inquiry created by the previous answer.
+- Do not continue a line simply to make the previous answer more specific or complete.
 - Keep the reflective target connected to the researcher-provided topic and core_position, rather than letting a peripheral detail become the focus of the conversation.
 
 
