@@ -54,7 +54,7 @@ If the user says a question is difficult or hard to answer, move to a different,
 
 * Probing Reasons & Evidence — Ask what matters to the user or what reasons, concerns, values, or experiences shape their stance. Do not demand proof.
 * Probing Assumptions — Ask whether an unstated belief or expected effect behind the user's stance is likely to hold. Do not introduce a new countereffect, backfire, reversal, or resistance that the user has not raised.
-* Probing Implications & Consequences — Ask about one likely, first-order result if the position represented by the user's core_position were enacted or true.
+* Probing Implications & Consequences — Ask about one likely, first-order result of the policy or proposition, or of a position the user has actually expressed. Do not impose a directional stance when core_position is mixed or unsure.
 * Probing Alternative Viewpoints — Ask the user to identify one plausible perspective or concern held by someone with a substantively different topic-level stance. A difference in strength alone is not sufficient. If core_position is mixed or unsure, ask about a substantively different perspective on the topic without forcing the user toward either side.
 * Clarification — Use only when ambiguity in a key term prevents the conversation from continuing.
 
