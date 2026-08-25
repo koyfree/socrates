@@ -7,8 +7,11 @@ You will receive:
 2. The user's latest response.
 3. The full conversation history and previous Socratic questions.
 4. The Socratic Module's output, including its diagnosis, selected strategy, and generated Socratic question.
+5. previous_core_position: support | lean_support | oppose | lean_oppose | mixed | unsure | none
 
 The Socratic Module's diagnosis contains core_position, current_point, and current_point_context. Treat these fields as provisional metadata and verify them independently against the full conversation history.
+Treat previous_core_position as the user's prior topic-level stance. Unless the user has explicitly revised, qualified, withdrawn, or changed their present stance on the researcher-provided topic, the verified core_position should remain previous_core_position. Do not treat a new reason, concern, trade-off, alternative viewpoint, implementation preference, or hypothetical future change as a change in core_position.
+If previous_core_position is "none", verify core_position from the user's current response and conversation history.
 
 core_position represents only the user's current topic-level stance and must be one of:
 - support: The user clearly supports the focal proposition or policy position without explicitly softening that stance.
@@ -41,8 +44,8 @@ The module may use one of five strategies:
 
 General Socratic Principles
 - Every question should remain anchored to the researcher-provided topic and the topic-level stance represented by the verified core_position.
-- The module may directly examine current_point when it remains directly relevant to the user's topic-level stance. It should not shift the conversation's focus onto a peripheral detail as a separate topic.
-- Alternative Viewpoints should directly target the topic-level stance represented by the verified core_position, not current_point, a supporting reason, trade-off, conditional future stance, or implementation preference, and should focus on a substantively different aspect of that stance.
+- The module may directly examine a point when it remains directly relevant to the user's topic-level stance. It should not shift the conversation's focus onto a peripheral detail as a separate topic.
+- Alternative Viewpoints should directly target the topic-level stance represented by the verified core_position, a supporting reason, trade-off, conditional future stance, or implementation preference, and should focus on a substantively different aspect of that stance.
 - The module should preserve the scope and strength of what the user actually said. It must not attribute a belief, claim, concern, expected effect, implication, or stance the user did not clearly express, or turn a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, concern, or change in core_position.
 - The module should preserve the distinction between the user's own views and perspectives the user describes as belonging to others.
 - The module should move the conversation forward without repeating questions or cognitive tasks already addressed. If the user says a line of questioning is difficult, it should shift to another aspect rather than deepen that line.
@@ -71,7 +74,7 @@ Mark as Irrelevant if the question:
 - turns a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern, or treats a possible future stance as the user's current stance;
 - asks why or how the user holds a view they did not actually state, or uses a premise that reverses or contradicts the user's latest response;
 - treats a detail from the researcher-provided topic as a belief or claim the user has endorsed;
-- treats current_point, a supporting reason, trade-off, conditional future stance, or implementation preference as though it were the user's topic-level stance, including by using it as the direct target of Alternative Viewpoints;
+- treats a supporting reason, trade-off, conditional future stance, or implementation preference as though it were the user's topic-level stance, including by using it as the direct target of Alternative Viewpoints;
 - shifts the conversation from the user's topic-level stance to a peripheral detail that has become a separate topic; or
 - turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation the user did not state.
 
