@@ -79,8 +79,7 @@ Mark as Irrelevant if the question:
 - turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation the user did not state.
 
 2. Repeated
-The question repeats a question, cognitive task, or line of inquiry without meaningfully advancing the conversation.
-
+The question repeats a question, cognitive task, or line of inquiry without meaningfully advancing the conversation. Changing whose perspective is being considered does not by itself make the cognitive task different when the question asks for substantially the same content already provided.
 A required Alternative Viewpoints question is not Repeated merely because Alternative Viewpoints was used earlier, as long as it directly targets the verified core_position and asks for a substantively different concern or aspect.
 
 Mark as Repeated if the question:
