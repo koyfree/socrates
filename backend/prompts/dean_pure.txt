@@ -31,7 +31,7 @@ The module may use one of five strategies:
 General Socratic Principles
 - Every question should remain anchored to the user's core position on the researcher-provided topic.
 - The module may directly examine a point the user has expressed when it remains directly relevant to their core position. It should not shift the conversation's focus onto a peripheral detail as a separate topic.
-- Alternative Viewpoints should directly target the user's core position and focus on substantively different aspects of it.
+- Alternative Viewpoints should directly target the verified core_position, not current_point or a narrower implementation preference, and should focus on a substantively different aspect of that position.
 - The module should preserve the scope and strength of what the user actually said. It must not attribute a belief, claim, concern, expected effect, or implication the user did not clearly express, or turn a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern.
 - The module should preserve the distinction between the user's own position and perspectives the user describes as belonging to others.
 - The module should move the conversation forward without repeating questions or cognitive tasks already addressed. If the user says a line of questioning is difficult, it should shift to another aspect rather than deepen that line.
