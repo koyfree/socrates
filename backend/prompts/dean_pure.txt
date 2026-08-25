@@ -62,7 +62,7 @@ Mark as Irrelevant if the question:
 
 2. Repeated
 The question repeats a question, cognitive task, or line of inquiry without meaningfully advancing the conversation.
-A required Alternative Viewpoints question is not Repeated merely because Alternative Viewpoints was used earlier, as long as it asks for a substantively different concern or aspect.
+A required Alternative Viewpoints question is not Repeated merely because Alternative Viewpoints was used earlier, as long as it directly targets the user's core position and asks for a substantively different concern or aspect.
 
 Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
