@@ -36,6 +36,7 @@ When `generation_mode` is "fallback", go to the step 8.
   * unsure: explicitly has not formed a view or lacks enough basis to take a position
 - If previous_core_position is not "none", compare the current response with it. Keep previous_core_position as core_position unless the user explicitly revises, qualifies, withdraws, or changes their present stance on the researcher-provided topic.
 - A new reason, concern, trade-off, another person's view, implementation preference, or hypothetical future change does not by itself indicate a change in core_position.
+- Preferring one consideration over another does not by itself constitute a change in stance.
 - Do not infer stance strength from tone, confidence, or the number or strength of reasons.
 
 1-2. Determine `current_point_context`, identifying whose perspective the latest relevant point represents.
