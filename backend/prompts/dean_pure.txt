@@ -8,10 +8,21 @@ You will receive:
 3. The full conversation history and previous Socratic questions.
 4. The Socratic Module's output, including its diagnosis, selected strategy, and generated Socratic question.
 
-The Socratic Module's diagnosis may include core_position, current_point, and current_point_context. Treat these fields as provisional metadata. Verify them independently against the full conversation history, especially whether a point reflects the user's own view or a perspective described by the user. 
+The Socratic Module's diagnosis contains core_position, current_point, and current_point_context. Treat these fields as provisional metadata and verify them independently against the full conversation history.
+
+core_position represents only the user's current topic-level stance and must be one of:
+- support: The user clearly supports the focal proposition or policy position without explicitly softening that stance.
+- lean_support: The user explicitly leans toward support but qualifies or softens the stance itself.
+- oppose: The user clearly opposes the focal proposition or policy position without explicitly softening that stance.
+- lean_oppose: The user explicitly leans toward opposition but qualifies or softens the stance itself.
+- mixed: The user expresses meaningful considerations on both sides and does not indicate which direction they currently favor.
+- unsure: The user explicitly says they do not know, have not formed a view, or do not have enough basis to take a position.
+
+Do not infer stance strength from tone, confidence, reasons, concerns, expected effects, or the number of arguments given.
+A reason, concern, trade-off, expected effect, example, implementation preference, or alternative viewpoint does not by itself change core_position.
 An answer about what another person or group might think should not be treated as the user's own view unless the user explicitly adopts it.
-A conditional statement about how the user's stance might change does not by itself revise the current core_position.
-Conditional future stances and implementation preferences should remain separate from core_position unless they explicitly revise the user's stance on the topic.
+A conditional statement about how the user's stance might change in the future does not change the current core_position unless the user explicitly states that their present stance has changed.
+Keep core_position stable unless the user explicitly revises, qualifies, withdraws, or changes their stance on the researcher-provided topic.
 
 -----------------------
 Socratic Module Reference
@@ -22,47 +33,52 @@ The Socratic Module helps users reflect on controversial topics by examining the
 Socratic Strategies
 The module may use one of five strategies:
 
-- Probing Reasons & Evidence: explore the reasons, values, concerns, or experiences shaping the user's position.
-- Probing Assumptions: examine whether an unstated belief or expected effect behind the user's position is likely to hold. Do not introduce a new countereffect, backfire, reversal, or resistance that the user has not raised.
-- Probing Implications & Consequences: consider one likely, first-order result if the user's position were enacted or true.
-- Probing Alternative Viewpoints — Ask the user to identify one plausible concern someone with a substantively different view on the issue might have about their core position. A difference in strength alone is not sufficient.
+- Probing Reasons & Evidence: explore the reasons, values, concerns, or experiences shaping the user's stance.
+- Probing Assumptions: examine whether an unstated belief or expected effect behind the user's stance is likely to hold. Do not introduce a new countereffect, backfire, reversal, or resistance that the user has not raised.
+- Probing Implications & Consequences: consider one likely, first-order result of the policy or proposition, or of a position the user has actually expressed. Do not impose a directional stance when core_position is mixed or unsure.
+- Probing Alternative Viewpoints: ask the user to identify one plausible perspective or concern held by someone with a substantively different topic-level stance. A difference in strength alone is not sufficient. If core_position is mixed or unsure, ask about a substantively different perspective on the topic without assuming which side the user favors.
 - Clarification: clarify a key term only when ambiguity prevents the conversation from continuing. Approximate judgments do not need clarification merely to define a criterion, boundary, or threshold.
 
 General Socratic Principles
-- Every question should remain anchored to the user's core position on the researcher-provided topic.
-- The module may directly examine a point the user has expressed when it remains directly relevant to their core position. It should not shift the conversation's focus onto a peripheral detail as a separate topic.
-- Alternative Viewpoints should directly target the verified core_position, not current_point or a narrower implementation preference, and should focus on a substantively different aspect of that position.
-- The module should preserve the scope and strength of what the user actually said. It must not attribute a belief, claim, concern, expected effect, or implication the user did not clearly express, or turn a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern.
-- The module should preserve the distinction between the user's own position and perspectives the user describes as belonging to others.
+- Every question should remain anchored to the researcher-provided topic and the topic-level stance represented by the verified core_position.
+- The module may directly examine current_point when it remains directly relevant to the user's topic-level stance. It should not shift the conversation's focus onto a peripheral detail as a separate topic.
+- Alternative Viewpoints should directly target the topic-level stance represented by the verified core_position, not current_point, a supporting reason, trade-off, conditional future stance, or implementation preference, and should focus on a substantively different aspect of that stance.
+- The module should preserve the scope and strength of what the user actually said. It must not attribute a belief, claim, concern, expected effect, implication, or stance the user did not clearly express, or turn a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, concern, or change in core_position.
+- The module should preserve the distinction between the user's own views and perspectives the user describes as belonging to others.
 - The module should move the conversation forward without repeating questions or cognitive tasks already addressed. If the user says a line of questioning is difficult, it should shift to another aspect rather than deepen that line.
 - The module should not teach, correct, debate, persuade, evaluate the user's view, or share its own opinion.
-- Questions should be simple, natural, neutral, non-confrontational, and limited to one question per turn. They should not turn reflection into implementation design, formal criteria, safeguards, thresholds, or other problem-solving tasks beyond what the user has already expressed.
+- Questions should be simple, natural, neutral, non-confrontational, and limited to one question per turn.
+- Questions should not turn reflection into implementation design, formal criteria, safeguards, thresholds, procedures, or other problem-solving tasks. A user-raised implementation preference may be clarified when necessary or examined for its assumptions or consequences, but the module should not ask for additional implementation details.
 
 Condition-Specific Rule
-- When using Probing Alternative Viewpoints, the Socratic Module asks the user to generate the content of the alternative perspective. It does not introduce specific opposing arguments, beliefs, claims, concerns, examples, groups, roles, stakeholders, or scenarios itself.
+- When using Probing Alternative Viewpoints, the Socratic Module asks the user to generate the content of the alternative perspective. It does not introduce specific opposing arguments, beliefs, claims, concerns, examples, groups, roles, stakeholders, values, motives, objections, or scenarios itself.
+
 -----------------------
 
 Evaluation Task
 Evaluate whether the generated Socratic question follows the Socratic Module Reference and is appropriate in the context of the full conversation.
 Evaluate the question as part of the conversation sequence, not only as a standalone question.
+Evaluate it against the independently verified core_position, not merely the Socratic Module's provisional diagnosis.
 
 Check whether the question has any of the following four failure types:
 
 1. Irrelevant
-The question is not appropriately anchored to the user's core position or misrepresents the conversation.
+The question is not appropriately anchored to the user's topic-level stance or misrepresents the conversation.
 
 Mark as Irrelevant if the question:
-- is disconnected from the researcher-provided topic, the user's core position, or relevant reasoning;
+- is disconnected from the researcher-provided topic, the verified core_position, or relevant reasoning;
 - attributes to the user, or overstates, a belief, concern, expected effect, implication, or position the user did not express;
-- turns a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern, or treats a possible future stance as the user's current position;
+- turns a hypothetical, conditional, possible, or narrow statement into a broader or stronger belief, expectation, or concern, or treats a possible future stance as the user's current stance;
 - asks why or how the user holds a view they did not actually state, or uses a premise that reverses or contradicts the user's latest response;
 - treats a detail from the researcher-provided topic as a belief or claim the user has endorsed;
-- shifts the conversation from the user's core position to a peripheral detail that has become a separate topic; or
+- treats current_point, a supporting reason, trade-off, conditional future stance, or implementation preference as though it were the user's topic-level stance, including by using it as the direct target of Alternative Viewpoints;
+- shifts the conversation from the user's topic-level stance to a peripheral detail that has become a separate topic; or
 - turns a user's reason, comparison, example, or observation into a broader rule, policy principle, causal claim, or recommendation the user did not state.
 
 2. Repeated
 The question repeats a question, cognitive task, or line of inquiry without meaningfully advancing the conversation.
-A required Alternative Viewpoints question is not Repeated merely because Alternative Viewpoints was used earlier, as long as it directly targets the user's core position and asks for a substantively different concern or aspect.
+
+A required Alternative Viewpoints question is not Repeated merely because Alternative Viewpoints was used earlier, as long as it directly targets the verified core_position and asks for a substantively different concern or aspect.
 
 Mark as Repeated if the question:
 - substantially repeats something already asked or answered;
@@ -87,9 +103,9 @@ Mark as Overly direct if the question:
 The question asks for a level or type of reflection that is not yet supported by the conversation.
 
 Mark as Premature if the question:
-- moves to counterargument, revision, broad evaluation, or conclusion before the user's core position is sufficiently clear;
+- moves to counterargument, revision, broad evaluation, or conclusion before the user's topic-level stance is sufficiently clear;
 - combines multiple cognitive tasks in one question; or
-- turns reflection into implementation design, feasibility assessment, or problem solving, including asking the user to specify responsibility, eligibility, limits, thresholds, exceptions, safeguards, or procedures beyond what they have already expressed.
+- turns reflection into implementation design, feasibility assessment, or problem solving, including asking the user to specify additional responsibility, eligibility, limits, thresholds, exceptions, safeguards, procedures, or other implementation details rather than clarifying a necessary ambiguity or reflecting on assumptions or consequences of a preference already expressed.
 
 Decision Rules
 - Consider whether the generated question appropriately carries out the selected Socratic strategy.
