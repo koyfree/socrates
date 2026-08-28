@@ -397,7 +397,6 @@ def call_gemini_text(
         input=payload_text,
         generation_config={
             "thinking_level": REASONING_EFFORT,
-            "max_output_tokens": MAX_OUTPUT_TOKENS,
         },
     )
 
