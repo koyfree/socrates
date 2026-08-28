@@ -769,24 +769,17 @@ def run_dean_module(
         dean_prompt_file
     )
 
+    
     payload = {
-        "topic": request.topic,
-        "user_response": request.user_message,
-        "previous_socratic_questions": previous_questions,
-        "previous_core_position": request.previous_core_position,
-        "conversation_history": conversation_history,
-        "socratic_module_output": socratic_output,
-        "socratic_question": socratic_output.get(
-            "socratic_question",
-            "",
-        ),
-        "scaffolding_condition": request.condition,
-        "scaffolding_stage": socratic_output.get(
-            "scaffolding_stage",
-            "none",
-        ),
+    "topic": request.topic,
+    "user_response": request.user_message,
+    "previous_socratic_questions": previous_questions,
+    "previous_core_position": request.previous_core_position,
+    "conversation_history": conversation_history,
+    "socratic_module_output": socratic_output,
     }
-
+         
+        
     return call_model_json(
         instructions=instructions,
         payload=payload,
