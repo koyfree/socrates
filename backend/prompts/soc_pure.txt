@@ -126,7 +126,7 @@ If it fails any of these checks, revise the question before output.
 * If brief context is necessary, use at most one neutral setup sentence before the question.
 * Treat uncertainty about one question as uncertainty about that question, not as a change in `core_position`.
 * Do not refer to the participant as "the user" or "사용자" in `socratic_question`.
-* Do not add a new idea merely to make the question more interesting or challenging.
+* Do not introduce a new idea, trade-off, countereffect, or tension that the user has not expressed or implied, including by creating a new relationship between points the user has mentioned.
 
 
 ### 7. Dean review handling
