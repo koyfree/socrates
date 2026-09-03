@@ -35,7 +35,7 @@ MODEL_CONFIGS = {
         "provider": "openai",
         "model_id": os.getenv(
             "OPENAI_MODEL",
-            "gpt-5.2-2025-12-11",
+            "gpt-5.4-2026-03-05",
         ),
     },
     "claude": {
