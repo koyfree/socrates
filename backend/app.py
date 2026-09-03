@@ -29,13 +29,14 @@ MAX_OUTPUT_TOKENS = 1600
 # 실제 API model id는 여기 한 곳에서 관리합니다.
 # 사전테스트 전에 각 provider에서 사용할 정확한 model id를 최종 확정하세요.
 # 환경변수로 model id를 덮어쓸 수도 있습니다.
+# gpt-5.2-2025-12-11, gpt-5.4-2026-03-05
 
 MODEL_CONFIGS = {
     "gpt": {
         "provider": "openai",
         "model_id": os.getenv(
             "OPENAI_MODEL",
-            "gpt-5.4-2026-03-05",
+            "gpt-5.2-2025-12-11",
         ),
     },
     "claude": {
