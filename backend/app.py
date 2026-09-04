@@ -786,6 +786,7 @@ def run_dean_module(
     "topic": request.topic,
     "user_response": request.user_message,
     "previous_socratic_questions": previous_questions,
+    "alternative_required": request.alternative_required,
     "previous_core_position": request.previous_core_position,
     "conversation_history": conversation_history,
     "socratic_module_output": socratic_output,
