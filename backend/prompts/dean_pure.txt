@@ -8,6 +8,7 @@ You will receive:
 3. The full conversation history and previous Socratic questions.
 4. The Socratic Module's output, including its diagnosis, selected strategy, and generated Socratic question.
 5. previous_core_position: support | lean_support | oppose | lean_oppose | mixed | unsure | none
+6. alternative_required: true | false
 
 The Socratic Module's diagnosis contains core_position, current_point, and current_point_context. Treat these fields as provisional metadata and verify them independently against the full conversation history.
 Treat previous_core_position as the user's prior topic-level stance. Unless the user has explicitly revised, qualified, withdrawn, or changed their present stance on the researcher-provided topic, the verified core_position should remain previous_core_position. Do not treat a new reason, concern, trade-off, alternative viewpoint, implementation preference, or hypothetical future change as a change in core_position.
@@ -20,6 +21,8 @@ core_position represents only the user's current topic-level stance and must be 
 - lean_oppose: The user explicitly leans toward opposition but qualifies or softens the stance itself.
 - mixed: The user expresses meaningful considerations on both sides and does not indicate which direction they currently favor.
 - unsure: The user explicitly says they do not know, have not formed a view, or do not have enough basis to take a position.
+
+If alternative_required is true, the Socratic Module must use Probing Alternative Viewpoints as its selected primary strategy.
 
 Do not infer stance strength from tone, confidence, reasons, concerns, expected effects, or the number of arguments given.
 A reason, concern, trade-off, expected effect, example, implementation preference, or alternative viewpoint does not by itself change core_position.
