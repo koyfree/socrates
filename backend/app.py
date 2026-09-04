@@ -39,6 +39,16 @@ MODEL_CONFIGS = {
             "gpt-5.2-2025-12-11",
         ),
     },
+
+    "gpt54": {
+        "provider": "openai",
+        "model_id": os.getenv(
+            "OPENAI_MODEL_54",
+            "gpt-5.4-2026-03-05",
+        ),
+    },
+
+    
     "claude": {
         "provider": "anthropic",
         "model_id": os.getenv(
@@ -90,6 +100,7 @@ app.add_middleware(
 
 ModelKey = Literal[
     "gpt",
+    "gpt54",
     "claude",
     "gemini",
     "deepseek",
