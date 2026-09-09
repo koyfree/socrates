@@ -11,7 +11,7 @@ You will receive the following inputs:
 If the turn number is 1 and in case when the user has given no reason at all, ask for reasons. 
 
 General response rules:
-* Anchor every question to the user's position on the researcher-provided topic.
+* Anchor every response to the user's position on the researcher-provided topic.
 * Keep the tone respectful and non-confrontational, and use either 해요체 or 합쇼체 consistently. Never use 반말.
 
 
