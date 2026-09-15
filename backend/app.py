@@ -22,61 +22,12 @@ VERBOSITY = "low"
 MAX_OUTPUT_TOKENS = 1600
 
 # ---------------------------------
-# 사전테스트용 모델 설정
+# 모델 설정
 # ---------------------------------
-#
-# model_key는 프론트에서 gpt / claude / gemini / deepseek 중 하나를 보냅니다.
-# 실제 API model id는 여기 한 곳에서 관리합니다.
-# 사전테스트 전에 각 provider에서 사용할 정확한 model id를 최종 확정하세요.
-# 환경변수로 model id를 덮어쓸 수도 있습니다.
-# gpt-5.2-2025-12-11, gpt-5.4-2026-03-05
 
-MODEL_CONFIGS = {
-    "gpt": {
-        "provider": "openai",
-        "model_id": os.getenv(
-            "OPENAI_MODEL",
-            "gpt-5.2-2025-12-11",
-        ),
-    },
-
-    "gpt54": {
-        "provider": "openai",
-        "model_id": os.getenv(
-            "OPENAI_MODEL_54",
-            "gpt-5.4-2026-03-05",
-        ),
-    },
-
-    
-    "claude": {
-        "provider": "anthropic",
-        "model_id": os.getenv(
-            "ANTHROPIC_MODEL",
-            "claude-sonnet-5",
-        ),
-    },
-    "gemini": {
-        "provider": "google",
-        "model_id": os.getenv(
-            "GEMINI_MODEL",
-            "gemini-3.1-pro-preview",
-        ),
-    },
-    "deepseek": {
-        "provider": "deepseek",
-        "model_id": os.getenv(
-            "DEEPSEEK_MODEL",
-            "deepseek-v4-pro",
-        ),
-    },
-}
-
-# 테스트용:
-# True이면 Dean 1과 Dean 2를 강제로 reject 처리해서
-# fallback 경로가 정상 작동하는지 확인합니다.
-# 실제 실험 전에는 반드시 False로 바꾸세요.
-FORCE_FALLBACK_TEST = False
+MODEL_KEY = "gpt"
+MODEL_PROVIDER = "openai"
+MODEL_ID = "gpt-5.2-2025-12-11"
 
 
 app = FastAPI(
@@ -97,14 +48,6 @@ app.add_middleware(
 # ---------------------------------
 # 요청·응답 형식
 # ---------------------------------
-
-ModelKey = Literal[
-    "gpt",
-    "gpt54",
-    "claude",
-    "gemini",
-    "deepseek",
-]
 
 PreviousCorePosition = Literal[
     "support",
@@ -130,10 +73,6 @@ class ChatRequest(BaseModel):
         "soc_pure",
         "soc_add",
     ]
-
-    # 기존 프론트와의 호환성을 위해 기본값은 gpt입니다.
-    # 모델 선택 UI가 model_key를 보내면 해당 모델로 전체 파이프라인이 실행됩니다.
-    model_key: ModelKey = "gpt"
 
     topic: str = Field(min_length=1)
 
@@ -164,7 +103,7 @@ class ChatResponse(BaseModel):
     condition: str
     turn_number: int
 
-    # 어떤 모델이 실제로 호출되었는지 프론트에서도 확인 가능
+    # 고정 모델 정보
     model_key: str
     model_provider: str
     model_id: str
@@ -190,12 +129,14 @@ def root() -> dict[str, str]:
 def health_check() -> dict:
     return {
         "status": "ok",
-        "available_model_keys": list(MODEL_CONFIGS.keys()),
+        "model_key": MODEL_KEY,
+        "model_provider": MODEL_PROVIDER,
+        "model_id": MODEL_ID,
     }
 
 
 # ---------------------------------
-# 공통 함수: prompt / model config
+# 공통 함수: prompt
 # ---------------------------------
 
 @lru_cache(maxsize=10)
@@ -212,20 +153,8 @@ def load_prompt(filename: str) -> str:
     ).strip()
 
 
-def get_model_config(model_key: str) -> dict[str, str]:
-    config = MODEL_CONFIGS.get(model_key)
-
-    if config is None:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unknown model_key: {model_key}",
-        )
-
-    return config
-
-
 # ---------------------------------
-# 공통 함수: provider client
+# OpenAI client
 # ---------------------------------
 
 @lru_cache(maxsize=1)
@@ -238,61 +167,6 @@ def get_openai_client() -> OpenAI:
         )
 
     return OpenAI(api_key=api_key)
-
-
-@lru_cache(maxsize=1)
-def get_anthropic_client():
-    api_key = os.getenv("ANTHROPIC_API_KEY")
-
-    if not api_key:
-        raise RuntimeError(
-            "ANTHROPIC_API_KEY is not configured."
-        )
-
-    try:
-        from anthropic import Anthropic
-    except ImportError as error:
-        raise RuntimeError(
-            "The anthropic package is not installed. "
-            "Run: pip install -U anthropic"
-        ) from error
-
-    return Anthropic(api_key=api_key)
-
-
-@lru_cache(maxsize=1)
-def get_gemini_client():
-    api_key = os.getenv("GEMINI_API_KEY")
-
-    if not api_key:
-        raise RuntimeError(
-            "GEMINI_API_KEY is not configured."
-        )
-
-    try:
-        from google import genai
-    except ImportError as error:
-        raise RuntimeError(
-            "The google-genai package is not installed. "
-            "Run: pip install -U google-genai"
-        ) from error
-
-    return genai.Client(api_key=api_key)
-
-
-@lru_cache(maxsize=1)
-def get_deepseek_client() -> OpenAI:
-    api_key = os.getenv("DEEPSEEK_API_KEY")
-
-    if not api_key:
-        raise RuntimeError(
-            "DEEPSEEK_API_KEY is not configured."
-        )
-
-    return OpenAI(
-        api_key=api_key,
-        base_url="https://api.deepseek.com",
-    )
 
 
 # ---------------------------------
@@ -333,18 +207,17 @@ def safe_json_loads(text: str) -> dict:
 
 
 # ---------------------------------
-# provider별 실제 API 호출
+# OpenAI API 호출
 # ---------------------------------
 
 def call_openai_text(
     instructions: str,
     payload_text: str,
-    model_id: str,
 ) -> str:
     client = get_openai_client()
 
     response = client.responses.create(
-        model=model_id,
+        model=MODEL_ID,
         instructions=instructions,
         input=payload_text,
         reasoning={
@@ -359,188 +232,37 @@ def call_openai_text(
     return response.output_text.strip()
 
 
-def call_anthropic_text(
-    instructions: str,
-    payload_text: str,
-    model_id: str,
-) -> str:
-    client = get_anthropic_client()
-
-    response = client.messages.create(
-        model=model_id,
-        system=instructions,
-        messages=[
-            {
-                "role": "user",
-                "content": payload_text,
-            }
-        ],
-        max_tokens=MAX_OUTPUT_TOKENS,
-        thinking={
-            "type": "adaptive"
-        },
-        output_config={
-            "effort": REASONING_EFFORT
-        },
-    )
-
-    text_parts = []
-
-    for block in response.content:
-        if getattr(block, "type", None) == "text":
-            text = getattr(block, "text", "")
-            if text:
-                text_parts.append(text)
-
-    return "\n".join(text_parts).strip()
-
-
-def call_gemini_text(
-    instructions: str,
-    payload_text: str,
-    model_id: str,
-) -> str:
-    client = get_gemini_client()
-
-    # Google은 2026년 기준 새 개발에 Interactions API 사용을 권장합니다.
-    interaction = client.interactions.create(
-        model=model_id,
-        system_instruction=instructions,
-        input=payload_text,
-        generation_config={
-            "thinking_level": REASONING_EFFORT,
-        },
-    )
-
-    return (interaction.output_text or "").strip()
-
-
-def call_deepseek_text(
-    instructions: str,
-    payload_text: str,
-    model_id: str,
-) -> str:
-    client = get_deepseek_client()
-
-    response = client.chat.completions.create(
-        model=model_id,
-        messages=[
-            {
-                "role": "system",
-                "content": instructions,
-            },
-            {
-                "role": "user",
-                "content": payload_text,
-            },
-        ],
-        max_tokens=12000,
-        response_format={
-            "type": "json_object"
-        },
-        stream=False,
-        reasoning_effort="high",
-        extra_body={
-            "thinking": {
-                "type": "enabled"
-            }
-        },
-    )
-
-    choice = response.choices[0]
-    message = choice.message
-
-    print("DEEPSEEK finish_reason:", choice.finish_reason)
-    print("DEEPSEEK content:", repr(message.content))
-
-    reasoning_content = getattr(
-        message,
-        "reasoning_content",
-        None
-    )
-
-    print(
-        "DEEPSEEK reasoning length:",
-        len(reasoning_content or "")
-    )
-    print("DEEPSEEK usage:", response.usage)
-
-    content = message.content
-    return (content or "").strip()
-
 def call_model_json(
     instructions: str,
     payload: dict,
-    model_key: ModelKey,
 ) -> dict:
-    config = get_model_config(model_key)
-    provider = config["provider"]
-    model_id = config["model_id"]
-
     payload_text = json.dumps(
         payload,
         ensure_ascii=False,
     )
 
     try:
-        if provider == "openai":
-            raw_text = call_openai_text(
-                instructions=instructions,
-                payload_text=payload_text,
-                model_id=model_id,
-            )
-
-        elif provider == "anthropic":
-            raw_text = call_anthropic_text(
-                instructions=instructions,
-                payload_text=payload_text,
-                model_id=model_id,
-            )
-
-        elif provider == "google":
-            raw_text = call_gemini_text(
-                instructions=instructions,
-                payload_text=payload_text,
-                model_id=model_id,
-            )
-
-        elif provider == "deepseek":
-            raw_text = call_deepseek_text(
-                instructions=instructions,
-                payload_text=payload_text,
-                model_id=model_id,
-            )
-
-        else:
-            raise RuntimeError(
-                f"Unsupported provider: {provider}"
-            )
-
-    except HTTPException:
-        raise
+        raw_text = call_openai_text(
+            instructions=instructions,
+            payload_text=payload_text,
+        )
 
     except Exception as error:
         print(
-            f"{provider} API error:",
+            "OpenAI API error:",
             type(error).__name__,
             str(error),
         )
 
         raise HTTPException(
             status_code=502,
-            detail=(
-                f"Failed to generate model response "
-                f"with {model_key}."
-            ),
+            detail="Failed to generate model response.",
         ) from error
 
     if not raw_text:
         raise HTTPException(
             status_code=502,
-            detail=(
-                f"The {model_key} model returned "
-                "an empty response."
-            ),
+            detail="The model returned an empty response.",
         )
 
     try:
@@ -548,22 +270,19 @@ def call_model_json(
 
     except Exception as error:
         print(
-            f"JSON parsing error ({model_key}):",
+            "JSON parsing error:",
             type(error).__name__,
             str(error),
         )
 
         print(
-            f"Raw {model_key} output:",
+            "Raw model output:",
             raw_text,
         )
 
         raise HTTPException(
             status_code=502,
-            detail=(
-                f"The {model_key} model returned "
-                "invalid JSON."
-            ),
+            detail="The model returned invalid JSON.",
         ) from error
 
 
@@ -618,15 +337,11 @@ def get_previous_socratic_questions(
     return assistant_messages[1:]
 
 
-def get_model_log_info(
-    request: ChatRequest
-) -> dict[str, str]:
-    config = get_model_config(request.model_key)
-
+def get_model_log_info() -> dict[str, str]:
     return {
-        "model_key": request.model_key,
-        "model_provider": config["provider"],
-        "model_id": config["model_id"],
+        "model_key": MODEL_KEY,
+        "model_provider": MODEL_PROVIDER,
+        "model_id": MODEL_ID,
     }
 
 
@@ -656,7 +371,6 @@ def generate_control_reply(
     control_output = call_model_json(
         instructions=instructions,
         payload=payload,
-        model_key=request.model_key,
     )
 
     reply = control_output.get(
@@ -686,7 +400,7 @@ def generate_control_reply(
     module_record = {
         "turn_number": request.turn_number,
         "condition": request.condition,
-        **get_model_log_info(request),
+        **get_model_log_info(),
         "prompt_file": "control.txt",
         "control_output": control_output,
         "final_reply": reply,
@@ -765,7 +479,6 @@ def run_socratic_module(
     return call_model_json(
         instructions=instructions,
         payload=payload,
-        model_key=request.model_key,
     )
 
 
@@ -796,7 +509,6 @@ def run_dean_module(
     return call_model_json(
         instructions=instructions,
         payload=payload,
-        model_key=request.model_key,
     )
 
 
@@ -877,10 +589,6 @@ def generate_socratic_reply(
             "",
         )
     ).strip().lower()
-
-    # 테스트 중에는 첫 번째 Dean을 강제로 reject 처리
-    if FORCE_FALLBACK_TEST:
-        first_dean_decision = "regenerate"
 
     # ---------------------------------
     # 3. Dean 1이 ok이면 최초 질문 사용
@@ -965,10 +673,6 @@ def generate_socratic_reply(
             )
         ).strip().lower()
 
-        # 테스트 중에는 두 번째 Dean도 강제로 reject 처리
-        if FORCE_FALLBACK_TEST:
-            second_dean_decision = "regenerate"
-
         # ---------------------------------
         # 6. Dean 2가 ok이면
         #    두 번째 질문 사용
@@ -1029,23 +733,13 @@ def generate_socratic_reply(
             fallback_used = True
 
     # ---------------------------------
-    # 테스트용 표시
-    # ---------------------------------
-
-    if FORCE_FALLBACK_TEST and fallback_used:
-        final_question = (
-            "[FALLBACK TEST] "
-            + final_question
-        )
-
-    # ---------------------------------
     # 8. 최종 로그 저장
     # ---------------------------------
 
     module_record = {
         "turn_number": request.turn_number,
         "condition": request.condition,
-        **get_model_log_info(request),
+        **get_model_log_info(),
         "previous_socratic_questions": (
             previous_questions
         ),
@@ -1143,7 +837,7 @@ def chat(
             detail="A prompt file was not found.",
         ) from error
 
-    model_info = get_model_log_info(request)
+    model_info = get_model_log_info()
 
     return ChatResponse(
         reply=reply,
