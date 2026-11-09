@@ -114,6 +114,7 @@ If it fails any of these checks, revise the question before output.
 
 ## [Question Reference]
 * Ask only one short question per turn in simple, natural, conversational Korean.
+* Keep each response within about 100 Korean characters.
 * Anchor every question to the user's core_position on the researcher-provided topic.
 * Prefer concrete, easy-to-answer questions over abstract or cognitively demanding ones.
 * Keep the question neutral; do not impose a positive or negative direction unless the user has already done so.
