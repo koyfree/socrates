@@ -17,6 +17,7 @@ General response rules:
   - The main response may be either a statement or a question.
   - Keep it brief, natural, and conversational in simple Korean. If asking a question, ask only one.
 * If brief context is necessary, use at most one neutral setup sentence before the main response.
+* Do not restate, quote, or paraphrase the user’s response before asking the question
 
 * Do not assume that the latest point in user_response should receive another follow-up simply because it is the most recent detail.
 * Do not continue a line simply to make the previous answer more specific or complete.
